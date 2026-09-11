@@ -1,15 +1,15 @@
-using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Options;
+using Npgsql;
 using Sales.Mcp.Application.Abstractions;
 using Sales.Mcp.Application.Configuration;
 
 namespace Sales.Mcp.Application.Infrastructure;
 
-public sealed class SqlServerConnectionFactory : ISqlConnectionFactory
+public sealed class PostgresConnectionFactory : ISqlConnectionFactory
 {
     private readonly string _connectionString;
 
-    public SqlServerConnectionFactory(IOptions<DatabaseConnectionOptions> options)
+    public PostgresConnectionFactory(IOptions<DatabaseConnectionOptions> options)
     {
         _connectionString = options.Value.ReadOnlyConnectionString;
 
@@ -19,9 +19,9 @@ public sealed class SqlServerConnectionFactory : ISqlConnectionFactory
         }
     }
 
-    public async Task<SqlConnection> OpenConnectionAsync(CancellationToken cancellationToken)
+    public async Task<NpgsqlConnection> OpenConnectionAsync(CancellationToken cancellationToken)
     {
-        var connection = new SqlConnection(_connectionString);
+        var connection = new NpgsqlConnection(_connectionString);
         await connection.OpenAsync(cancellationToken);
         return connection;
     }

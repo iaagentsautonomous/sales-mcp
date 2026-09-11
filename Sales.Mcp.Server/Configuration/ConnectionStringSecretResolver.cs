@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Sales.Mcp.Server.Configuration;
 
@@ -11,7 +11,7 @@ public static class ConnectionStringSecretResolver
             throw new InvalidOperationException("A connection string base nao foi configurada.");
         }
 
-        var builder = new SqlConnectionStringBuilder(baseConnectionString);
+        var builder = new NpgsqlConnectionStringBuilder(baseConnectionString);
         if (!string.IsNullOrWhiteSpace(builder.Password))
         {
             return builder.ConnectionString;

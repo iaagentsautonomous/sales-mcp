@@ -19,11 +19,11 @@ public sealed class SalesSchemaService
     {
         const string sql = """
             SELECT
-                DB_NAME() AS DatabaseName,
+                current_database() AS DatabaseName,
                 'sales' AS SchemaName,
-                (SELECT COUNT(*) FROM sys.tables AS t INNER JOIN sys.schemas AS s ON s.schema_id = t.schema_id WHERE s.name = 'sales') AS TableCount,
-                (SELECT COUNT(*) FROM sys.views AS v INNER JOIN sys.schemas AS s ON s.schema_id = v.schema_id WHERE s.name = 'sales') AS ViewCount,
-                (SELECT COUNT(*) FROM sys.foreign_keys AS fk INNER JOIN sys.schemas AS s ON s.schema_id = fk.schema_id WHERE s.name = 'sales') AS ForeignKeyCount;
+                (SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'sales' AND table_type = 'BASE TABLE') AS TableCount,
+                (SELECT COUNT(*) FROM information_schema.views WHERE table_schema = 'sales') AS ViewCount,
+                (SELECT COUNT(*) FROM information_schema.table_constraints WHERE constraint_schema = 'sales' AND constraint_type = 'FOREIGN KEY') AS ForeignKeyCount;
             """;
 
         await using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
@@ -44,27 +44,27 @@ public sealed class SalesSchemaService
     {
         const string sql = """
             SELECT
-                c.TABLE_NAME AS TableName,
-                c.COLUMN_NAME AS ColumnName,
-                c.DATA_TYPE AS DataType,
-                c.CHARACTER_MAXIMUM_LENGTH AS MaxLength,
-                CASE WHEN c.IS_NULLABLE = 'YES' THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsNullable,
-                CASE WHEN k.COLUMN_NAME IS NOT NULL THEN CAST(1 AS bit) ELSE CAST(0 AS bit) END AS IsPrimaryKey
-            FROM INFORMATION_SCHEMA.COLUMNS AS c
+                c.table_name AS TableName,
+                c.column_name AS ColumnName,
+                c.data_type AS DataType,
+                c.character_maximum_length AS MaxLength,
+                (c.is_nullable = 'YES') AS IsNullable,
+                (k.column_name IS NOT NULL) AS IsPrimaryKey
+            FROM information_schema.columns AS c
             LEFT JOIN
             (
-                SELECT ku.TABLE_NAME, ku.COLUMN_NAME
-                FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS AS tc
-                INNER JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE AS ku
-                    ON ku.CONSTRAINT_NAME = tc.CONSTRAINT_NAME
-                   AND ku.TABLE_SCHEMA = tc.TABLE_SCHEMA
-                WHERE tc.TABLE_SCHEMA = 'sales'
-                  AND tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+                SELECT ku.table_name, ku.column_name
+                FROM information_schema.table_constraints AS tc
+                INNER JOIN information_schema.key_column_usage AS ku
+                    ON ku.constraint_name = tc.constraint_name
+                   AND ku.table_schema = tc.table_schema
+                WHERE tc.table_schema = 'sales'
+                  AND tc.constraint_type = 'PRIMARY KEY'
             ) AS k
-                ON k.TABLE_NAME = c.TABLE_NAME
-               AND k.COLUMN_NAME = c.COLUMN_NAME
-            WHERE c.TABLE_SCHEMA = 'sales'
-            ORDER BY c.TABLE_NAME, c.ORDINAL_POSITION;
+                ON k.table_name = c.table_name
+               AND k.column_name = c.column_name
+            WHERE c.table_schema = 'sales'
+            ORDER BY c.table_name, c.ordinal_position;
             """;
 
         await using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);

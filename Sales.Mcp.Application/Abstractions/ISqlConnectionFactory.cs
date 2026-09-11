@@ -1,8 +1,8 @@
-using Microsoft.Data.SqlClient;
+using Npgsql;
 
 namespace Sales.Mcp.Application.Abstractions;
 
 public interface ISqlConnectionFactory
 {
-    Task<SqlConnection> OpenConnectionAsync(CancellationToken cancellationToken);
+    Task<NpgsqlConnection> OpenConnectionAsync(CancellationToken cancellationToken);
 }

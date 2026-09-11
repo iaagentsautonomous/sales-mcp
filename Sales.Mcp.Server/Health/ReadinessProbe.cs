@@ -1,4 +1,4 @@
-using Microsoft.Data.SqlClient;
+using Npgsql;
 using Sales.Mcp.Server.Authentication;
 
 namespace Sales.Mcp.Server.Health;
@@ -20,7 +20,7 @@ public sealed class ReadinessProbe
         {
             _ = _tokenProvider.GetRequiredToken();
 
-            await using var connection = new SqlConnection(_connectionString);
+            await using var connection = new NpgsqlConnection(_connectionString);
             await connection.OpenAsync(cancellationToken);
             await using var command = connection.CreateCommand();
             command.CommandText = "SELECT 1";

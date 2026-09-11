@@ -88,7 +88,7 @@ builder.Services.Configure<QueryGuardrailsOptions>(options =>
     options.MaxPageSize = mcpSectionValues.MaxPageSize;
 });
 
-builder.Services.AddSingleton<ISqlConnectionFactory, SqlServerConnectionFactory>();
+builder.Services.AddSingleton<ISqlConnectionFactory, PostgresConnectionFactory>();
 builder.Services.AddSingleton<ToolArgumentValidator>();
 builder.Services.AddSingleton<SalesAnalyticsService>();
 builder.Services.AddSingleton<SalesSchemaService>();
