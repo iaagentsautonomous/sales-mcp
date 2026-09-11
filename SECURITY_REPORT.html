@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório de Segurança - Sales MCP Server</title>
+    <style>
+        :root {
+            --critical: #dc2626;
+            --high: #ea580c;
+            --medium: #ca8a04;
+            --low: #16a34a;
+            --info: #2563eb;
+            --bg: #0f172a;
+            --card: #1e293b;
+            --text: #e2e8f0;
+            --muted: #94a3b8;
+            --border: #334155;
+            --accent: #38bdf8;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            padding: 2rem;
+        }
+        .container { max-width: 1100px; margin: 0 auto; }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 3rem 2rem;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin-bottom: 2rem;
+        }
+        .header h1 {
+            font-size: 2.2rem;
+            background: linear-gradient(135deg, var(--accent), #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+        .header .subtitle {
+            color: var(--muted);
+            font-size: 1.1rem;
+        }
+        .header .badge {
+            display: inline-block;
+            margin-top: 1rem;
+            padding: 0.4rem 1.2rem;
+            border-radius: 999px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .badge.medium { background: #854d0e; color: #fef08a; }
+
+        /* Score Card */
+        .score-card {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        .score-item {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        .score-item .value {
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        .score-item .label {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+        .score-item .value.critical { color: var(--critical); }
+        .score-item .value.high { color: var(--high); }
+        .score-item .value.medium { color: var(--medium); }
+        .score-item .value.low { color: var(--low); }
+        .score-item .value.info { color: var(--info); }
+
+        /* Sections */
+        .section {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        .section h2 {
+            font-size: 1.4rem;
+            color: var(--accent);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .section h3 {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+            margin: 1.2rem 0 0.6rem;
+        }
+        .section p, .section li {
+            color: #cbd5e1;
+            margin-bottom: 0.5rem;
+        }
+        .section ul { padding-left: 1.5rem; }
+        .section ul li { margin-bottom: 0.4rem; }
+
+        /* Finding Cards */
+        .finding {
+            background: #0f172a;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1.2rem;
+            margin: 1rem 0;
+        }
+        .finding .finding-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+        .finding .finding-title {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        .finding .severity-tag {
+            padding: 0.2rem 0.8rem;
+            border-radius: 999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        .severity-tag.critical { background: #450a0a; color: #fca5a5; }
+        .severity-tag.high { background: #431407; color: #fdba74; }
+        .severity-tag.medium { background: #422006; color: #fde68a; }
+        .severity-tag.low { background: #052e16; color: #86efac; }
+        .finding .finding-detail {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 0.4rem;
+        }
+        .finding .finding-recommendation {
+            margin-top: 0.6rem;
+            padding: 0.6rem;
+            background: #1e293b;
+            border-left: 3px solid var(--accent);
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #bae6fd;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+            font-size: 0.9rem;
+        }
+        th, td {
+            padding: 0.7rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+        th {
+            background: #0f172a;
+            color: var(--accent);
+            font-weight: 600;
+        }
+        tr:hover td { background: #0f172a; }
+
+        /* Status indicators */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .status.pass { background: #052e16; color: #86efac; }
+        .status.fail { background: #450a0a; color: #fca5a5; }
+        .status.warn { background: #422006; color: #fde68a; }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 8px;
+            background: #1e293b;
+            border-radius: 999px;
+            overflow: hidden;
+            margin: 0.5rem 0;
+        }
+        .progress-bar .fill {
+            height: 100%;
+            border-radius: 999px;
+            transition: width 0.5s;
+        }
+        .fill.green { background: #16a34a; }
+        .fill.yellow { background: #ca8a04; }
+        .fill.red { background: #dc2626; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted);
+            font-size: 0.85rem;
+            border-top: 1px solid var(--border);
+            margin-top: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .header h1 { font-size: 1.6rem; }
+            .score-card { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- Header -->
+    <div class="header">
+        <h1>🔒 Relatório de Segurança</h1>
+        <p class="subtitle">Sales MCP Server — Análise Completa de Postura de Segurança</p>
+        <span class="badge medium">Risco Geral: MÉDIO</span>
+        <p style="margin-top:0.8rem; color:var(--muted); font-size:0.85rem;">
+            Gerado em: <span id="generated-date"></span> &nbsp;|&nbsp; Versão: 1.0 &nbsp;|&nbsp; Classificação: Interno
+        </p>
+    </div>
+
+    <!-- Score Cards -->
+    <div class="score-card">
+        <div class="score-item">
+            <div class="value info">12</div>
+            <div class="label">Controles de Segurança Implementados</div>
+        </div>
+        <div class="score-item">
+            <div class="value critical">1</div>
+            <div class="label">Vulnerabilidades Críticas</div>
+        </div>
+        <div class="score-item">
+            <div class="value high">1</div>
+            <div class="label">Vulnerabilidades Altas</div>
+        </div>
+        <div class="score-item">
+            <div class="value medium">2</div>
+            <div class="label">Vulnerabilidades Médias</div>
+        </div>
+        <div class="score-item">
+            <div class="value low">2</div>
+            <div class="label">Vulnerabilidades Baixas</div>
+        </div>
+    </div>
+
+    <!-- Executive Summary -->
+    <div class="section">
+        <h2>📋 1. Resumo Executivo</h2>
+        <p>
+            O <strong>Sales MCP Server</strong> é um servidor MCP (Model Context Protocol) desenvolvido em .NET 8 que
+            expõe ferramentas de análise de vendas (KPIs, relatórios, performance de vendedores) através de uma API
+            HTTP com autenticação Bearer Token. A aplicação foi projetada com diversos controles de segurança desde
+            sua concepção, demonstrando uma postura de <strong>security-by-design</strong>.
+        </p>
+        <p>
+            A análise identificou <strong>6 vulnerabilidades</strong> (1 crítica, 1 alta, 2 médias, 2 baixas) em um
+            universo de <strong>12 controles de segurança verificados</strong>. O risco geral é classificado como
+            <strong>MÉDIO</strong>, com as principais preocupações sendo a configuração de CORS permissiva em
+            ambiente de desenvolvimento e a exposição de informações via endpoints anônimos.
+        </p>
+        <div style="margin-top:1rem;">
+            <div style="display:flex; justify-content:space-between; font-size:0.85rem;">
+                <span>Postura de Segurança</span>
+                <span>70%</span>
+            </div>
+            <div class="progress-bar">
+                <div class="fill yellow" style="width:70%"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Authentication & Authorization -->
+    <div class="section">
+        <h2>🔑 2. Autenticação e Autorização</h2>
+
+        <h3>Mecanismo de Autenticação</h3>
+        <p>
+            A aplicação utiliza <strong>Bearer Token Authentication</strong> com esquema customizado
+            (<code>FileBearerAuthenticationHandler</code>). O token esperado é lido de um arquivo em disco
+            (<code>BearerTokenFile</code>), com cache thread-safe e detecção de alterações via
+            <code>FileSystemWatcher</code> (last write time).
+        </p>
+
+        <table>
+            <tr><th>Controle</th><th>Status</th><th>Detalhes</th></tr>
+            <tr>
+                <td>Fallback Policy: RequireAuthenticatedUser</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Todos os endpoints exigem autenticação por padrão</td>
+            </tr>
+            <tr>
+                <td>[Authorize] em Tools/Resources MCP</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Todos os 12 tools e 4 resources possuem o atributo</td>
+            </tr>
+            <tr>
+                <td>Token armazenado em arquivo (não em código)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Gerenciado via Docker Secrets em produção</td>
+            </tr>
+            <tr>
+                <td>Cache de token com lock thread-safe</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td><code>FileTokenProvider</code> com lock e cache por timestamp</td>
+            </tr>
+            <tr>
+                <td>Endpoints anônimos de diagnóstico</td>
+                <td><span class="status warn">⚠️ Atenção</span></td>
+                <td><code>/health/live</code>, <code>/health/ready</code>, <code>/version</code> são públicos</td>
+            </tr>
+        </table>
+
+        <div class="finding">
+            <div class="finding-header">
+                <span class="finding-title">🔴 Endpoints de Diagnóstico Expõem Informações do Servidor</span>
+                <span class="severity-tag high">ALTO</span>
+            </div>
+            <div class="finding-detail">
+                <strong>Arquivo:</strong> <code>Sales.Mcp.Server/Endpoints/DiagnosticEndpoints.cs</code><br>
+                <strong>Descrição:</strong> Os endpoints <code>/health/live</code>, <code>/health/ready</code> e
+                <code>/version</code> são marcados com <code>[AllowAnonymous]</code>. O endpoint <code>/version</code>
+                expõe o nome do assembly, versão e framework (.NET 8), informações que podem auxiliar um atacante
+                a identificar versões vulneráveis.
+            </div>
+            <div class="finding-recommendation">
+                <strong>Recomendação:</strong> Restringir o endpoint <code>/version</code> com autenticação ou
+                removê-lo em produção. Para healthchecks, utilizar apenas <code>/health/live</code> e
+                <code>/health/ready</code>, que expõem informações mínimas.
+            </div>
+        </div>
+    </div>
+
+    <!-- Network & Transport Security -->
+    <div class="section">
+        <h2>🌐 3. Segurança de Rede e Transporte</h2>
+
+        <h3>Validação de Origem (CORS)</h3>
+        <p>
+            O middleware <code>OriginValidationMiddleware</code> valida o header <code>Origin</code> das requisições
+            ao endpoint <code>/mcp</code>. A validação é feita pelo <code>AllowedOriginEvaluator</code>, que normaliza
+            a URI e compara com um conjunto de origens permitidas.
+        </p>
+
+        <table>
+            <tr><th>Controle</th><th>Status</th><th>Detalhes</th></tr>
+            <tr>
+                <td>Validação de Origin no middleware</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Implementado via <code>OriginValidationMiddleware</code></td>
+            </tr>
+            <tr>
+                <td>Normalização de URI (evita bypass)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Usa <code>Uri.GetLeftPart(UriPartial.Authority)</code></td>
+            </tr>
+            <tr>
+                <td>Port binding restrito (Docker)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td><code>127.0.0.1:8080:8080</code> — apenas localhost</td>
+            </tr>
+            <tr>
+                <td>HTTPS/TLS</td>
+                <td><span class="status fail">❌ Fail</span></td>
+                <td>Não configurado — tráfego em texto plano</td>
+            </tr>
+        </table>
+
+        <div class="finding">
+            <div class="finding-header">
+                <span class="finding-title">🔴 AllowedOrigins: "*" em Desenvolvimento</span>
+                <span class="severity-tag critical">CRÍTICO</span>
+            </div>
+            <div class="finding-detail">
+                <strong>Arquivo:</strong> <code>Sales.Mcp.Server/appsettings.Development.json</code> (linha 15)<br>
+                <strong>Descrição:</strong> Em ambiente de desenvolvimento, <code>AllowedOrigins</code> está
+                configurado como <code>"*"</code>. Isso faz com que o <code>AllowedOriginEvaluator</code> trate
+                o conjunto de origens como vazio (após split por vírgula, o valor <code>"*"</code> não é um
+                wildcard válido), resultando em <strong>nenhuma validação de origem</strong> — qualquer site
+                pode fazer requisições ao servidor MCP.
+            </div>
+            <div class="finding-recommendation">
+                <strong>Recomendação:</strong> Substituir <code>"*"</code> pelas origens reais permitidas em
+                desenvolvimento (ex: <code>"http://localhost:6274,http://127.0.0.1:6274"</code>). Considerar
+                também implementar suporte a wildcard <code>"*"</code> no <code>AllowedOriginEvaluator</code>
+                para maior clareza.
+            </div>
+        </div>
+
+        <div class="finding">
+            <div class="finding-header">
+                <span class="finding-title">🟡 Ausência de HTTPS/TLS</span>
+                <span class="severity-tag medium">MÉDIO</span>
+            </div>
+            <div class="finding-detail">
+                <strong>Descrição:</strong> O servidor não possui configuração de HTTPS/TLS. O token Bearer
+                e todos os dados trafegam em texto plano. Em produção, o container escuta em <code>http://0.0.0.0:8080</code>.
+            </div>
+            <div class="finding-recommendation">
+                <strong>Recomendação:</strong> Configurar TLS no reverse proxy (nginx, Traefik) ou habilitar
+                HTTPS no Kestrel com certificados gerenciados por Docker Secrets. Para ambientes internos
+                com rede isolada, o risco é mitigado pelo port binding restrito.
+            </div>
+        </div>
+    </div>
+
+    <!-- Attack Protection -->
+    <div class="section">
+        <h2>🛡️ 4. Proteção contra Ataques Comuns</h2>
+
+        <table>
+            <tr><th>Controle</th><th>Status</th><th>Detalhes</th></tr>
+            <tr>
+                <td>Limite de payload (MaxRequestBodyBytes)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>128 KB configurado via Kestrel + middleware</td>
+            </tr>
+            <tr>
+                <td>Timeout de requisição (RequestTimeoutSeconds)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>30s com abort da conexão via <code>McpRequestGuardMiddleware</code></td>
+            </tr>
+            <tr>
+                <td>Proteção contra SQL Injection</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Dapper com parâmetros tipados em todas as queries</td>
+            </tr>
+            <tr>
+                <td>Validação de argumentos (ToolArgumentValidator)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Datas, limites, enumerações — tudo validado antes da query</td>
+            </tr>
+            <tr>
+                <td>Correlation ID para rastreabilidade</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td><code>CorrelationIdMiddleware</code> com <code>TraceIdentifier</code></td>
+            </tr>
+            <tr>
+                <td>Server header oculto</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td><code>AddServerHeader = false</code> no Kestrel</td>
+            </tr>
+            <tr>
+                <td>Rate Limiting</td>
+                <td><span class="status fail">❌ Fail</span></td>
+                <td>Não implementado</td>
+            </tr>
+            <tr>
+                <td>Proteção contra brute-force no token</td>
+                <td><span class="status fail">❌ Fail</span></td>
+                <td>Não implementada</td>
+            </tr>
+        </table>
+
+        <div class="finding">
+            <div class="finding-header">
+                <span class="finding-title">🟡 Ausência de Rate Limiting</span>
+                <span class="severity-tag medium">MÉDIO</span>
+            </div>
+            <div class="finding-detail">
+                <strong>Descrição:</strong> Não há limite de requisições por cliente/IP. Um atacante pode
+                fazer milhares de requisições simultâneas, potencialmente causando negação de serviço ou
+                consumo excessivo de recursos do banco de dados.
+            </div>
+            <div class="finding-recommendation">
+                <strong>Recomendação:</strong> Implementar rate limiting usando middleware ASP.NET Core
+                (ex: <code>AspNetCoreRateLimit</code> ou <code>System.Threading.RateLimiting</code>).
+                Configurar limites como 100 requisições/minuto por IP para endpoints MCP.
+            </div>
+        </div>
+
+        <div class="finding">
+            <div class="finding-header">
+                <span class="finding-title">🟢 Ausência de Proteção contra Brute-Force</span>
+                <span class="severity-tag low">BAIXO</span>
+            </div>
+            <div class="finding-detail">
+                <strong>Descrição:</strong> Não há mecanismo de bloqueio após múltiplas tentativas de
+                autenticação com token inválido. Um atacante pode tentar adivinhar o token Bearer.
+            </div>
+            <div class="finding-recommendation">
+                <strong>Recomendação:</strong> Implementar delay progressivo ou bloqueio temporário após
+                N tentativas falhas de autenticação. O risco é mitigado pelo uso de tokens longos e
+                aleatórios armazenados em arquivos seguros.
+            </div>
+        </div>
+    </div>
+
+    <!-- Data & Database Security -->
+    <div class="section">
+        <h2>🗄️ 5. Segurança de Dados e Banco de Dados</h2>
+
+        <table>
+            <tr><th>Controle</th><th>Status</th><th>Detalhes</th></tr>
+            <tr>
+                <td>Conexão read-only exclusiva</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Usuário <code>mcp_reader</code> com role <code>db_datareader</code></td>
+            </tr>
+            <tr>
+                <td>Senhas gerenciadas via Docker Secrets</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Nunca em variáveis de ambiente ou código fonte</td>
+            </tr>
+            <tr>
+                <td>ConnectionStringSecretResolver</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Resolve senhas de arquivos em runtime</td>
+            </tr>
+            <tr>
+                <td>Query guardrails (MaxPageSize, MaxDateRangeDays)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Impede queries excessivas ou sem limite</td>
+            </tr>
+            <tr>
+                <td>Princípio do menor privilégio (banco)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Apenas SELECT em schema sales</td>
+            </tr>
+            <tr>
+                <td>Criptografia em repouso (dados)</td>
+                <td><span class="status warn">⚠️ Atenção</span></td>
+                <td>Não configurada no SQL Server</td>
+            </tr>
+        </table>
+
+        <h3>Análise de Vazamento de Dados</h3>
+        <p>
+            A aplicação expõe dados de vendas (faturamento, produtos, clientes, vendedores) através das
+            ferramentas MCP. Todos os dados são consultados com uma conexão <strong>read-only</strong> usando
+            o usuário <code>mcp_reader</code>, que possui apenas permissão de leitura no schema
+            <code>sales</code>. Não há operações de escrita, exclusão ou alteração de dados.
+        </p>
+        <p>
+            Os DTOs de resposta expõem informações como nomes de clientes, códigos de vendedores, valores
+            de comissão e métricas de performance. Embora sejam dados de um ambiente de demonstração (fake data),
+            em produção é importante revisar se todos os campos são realmente necessários para o caso de uso.
+        </p>
+
+        <div class="finding">
+            <div class="finding-header">
+                <span class="finding-title">🟢 Dados Sensíveis em Logs de Warning</span>
+                <span class="severity-tag low">BAIXO</span>
+            </div>
+            <div class="finding-detail">
+                <strong>Arquivo:</strong> <code>Sales.Mcp.Server/Middleware/OriginValidationMiddleware.cs</code> (linha 40)<br>
+                <strong>Descrição:</strong> O middleware registra a origem bloqueada no log de warning:
+                <code>_logger.LogWarning("Origem bloqueada. Origin={Origin} TraceId={TraceId}", ...)</code>.
+                Embora não seja um dado crítico, a origem da requisição é registrada e pode conter
+                informações sobre clientes ou sistemas internos.
+            </div>
+            <div class="finding-recommendation">
+                <strong>Recomendação:</strong> Considerar mascarar ou truncar o valor de Origin nos logs,
+                ou registrar apenas o TraceId para correlação. Em produção, configurar log aggregation
+                com sanitização automática.
+            </div>
+        </div>
+    </div>
+
+    <!-- Container & Deploy Security -->
+    <div class="section">
+        <h2>🐳 6. Segurança em Container e Deploy</h2>
+
+        <table>
+            <tr><th>Controle</th><th>Status</th><th>Detalhes</th></tr>
+            <tr>
+                <td>Usuário non-root (USER $APP_UID)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Container executa como usuário não privilegiado</td>
+            </tr>
+            <tr>
+                <td>read_only filesystem + tmpfs</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td><code>read_only: true</code> com <code>tmpfs: /tmp</code></td>
+            </tr>
+            <tr>
+                <td>Capabilities drop (cap_drop: ALL)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Todas as capabilities Linux removidas</td>
+            </tr>
+            <tr>
+                <td>no-new-privileges</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Impede escalonamento de privilégio</td>
+            </tr>
+            <tr>
+                <td>Healthcheck configurado</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Verifica <code>/health/ready</code> a cada 15s</td>
+            </tr>
+            <tr>
+                <td>DOTNET_EnableDiagnostics=0</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Desabilita diagnósticos e debug remoto</td>
+            </tr>
+            <tr>
+                <td>Secrets gerenciados externamente</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Docker Secrets para senhas e tokens</td>
+            </tr>
+            <tr>
+                <td>Multi-stage build (slim runtime)</td>
+                <td><span class="status pass">✅ Pass</span></td>
+                <td>Imagem final <code>aspnet:8.0-bookworm-slim</code></td>
+            </tr>
+        </table>
+
+        <p style="margin-top:1rem;">
+            A configuração de container é um dos pontos mais fortes da aplicação. As práticas de
+            <strong>container hardening</strong> seguem as recomendações do CIS Docker Benchmark e
+            OWASP Docker Security.
+        </p>
+    </div>
+
+    <!-- Vulnerabilities Summary -->
+    <div class="section">
+        <h2>📊 7. Sumário de Vulnerabilidades</h2>
+
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Severidade</th>
+                <th>Vulnerabilidade</th>
+                <th>Localização</th>
+                <th>Impacto</th>
+            </tr>
+            <tr>
+                <td>V-001</td>
+                <td><span class="severity-tag critical">CRÍTICO</span></td>
+                <td>AllowedOrigins "*" em desenvolvimento</td>
+                <td><code>appsettings.Development.json</code></td>
+                <td>Qualquer origem pode acessar o MCP</td>
+            </tr>
+            <tr>
+                <td>V-002</td>
+                <td><span class="severity-tag high">ALTO</span></td>
+                <td>Endpoints anônimos expõem metadados</td>
+                <td><code>DiagnosticEndpoints.cs</code></td>
+                <td>Information disclosure (versão, framework)</td>
+            </tr>
+            <tr>
+                <td>V-003</td>
+                <td><span class="severity-tag medium">MÉDIO</span></td>
+                <td>Ausência de HTTPS/TLS</td>
+                <td><code>Program.cs</code> / Docker</td>
+                <td>Tráfego em texto plano</td>
+            </tr>
+            <tr>
+                <td>V-004</td>
+                <td><span class="severity-tag medium">MÉDIO</span></td>
+                <td>Ausência de rate limiting</td>
+                <td>Não implementado</td>
+                <td>Potencial DoS no banco de dados</td>
+            </tr>
+            <tr>
+                <td>V-005</td>
+                <td><span class="severity-tag low">BAIXO</span></td>
+                <td>Sem proteção brute-force no token</td>
+                <td><code>FileBearerAuthenticationHandler.cs</code></td>
+                <td>Tentativas ilimitadas de autenticação</td>
+            </tr>
+            <tr>
+                <td>V-006</td>
+                <td><span class="severity-tag low">BAIXO</span></td>
+                <td>Log de origem bloqueada</td>
+                <td><code>OriginValidationMiddleware.cs</code></td>
+                <td>Informação do cliente em logs</td>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="section">
+        <h2>✅ 8. Recomendações e Plano de Ação</h2>
+
+        <h3>🔴 Imediatas (Críticas/Altas)</h3>
+        <ul>
+            <li>
+                <strong>V-001:</strong> Corrigir <code>AllowedOrigins</code> no
+                <code>appsettings.Development.json</code> — substituir <code>"*"</code> pelas origens
+                reais. Estimar: <strong>15 minutos</strong>.
+            </li>
+            <li>
+                <strong>V-002:</strong> Adicionar autenticação ao endpoint <code>/version</code> ou
+                removê-lo em produção. Estimar: <strong>30 minutos</strong>.
+            </li>
+        </ul>
+
+        <h3>🟡 Curto Prazo (Médias)</h3>
+        <ul>
+            <li>
+                <strong>V-003:</strong> Configurar TLS no reverse proxy ou habilitar HTTPS no Kestrel.
+                Estimar: <strong>2 horas</strong>.
+            </li>
+            <li>
+                <strong>V-004:</strong> Implementar rate limiting com
+                <code>System.Threading.RateLimiting</code> (disponível no .NET 8).
+                Estimar: <strong>4 horas</strong>.
+            </li>
+        </ul>
+
+        <h3>🟢 Médio Prazo (Baixas)</h3>
+        <ul>
+            <li>
+                <strong>V-005:</strong> Adicionar contagem de tentativas falhas e delay/bloqueio
+                temporário. Estimar: <strong>3 horas</strong>.
+            </li>
+            <li>
+                <strong>V-006:</strong> Sanitizar logs ou remover Origin do warning.
+                Estimar: <strong>30 minutos</strong>.
+            </li>
+        </ul>
+
+        <h3>📌 Boas Práticas Adicionais</h3>
+        <ul>
+            <li>Revisar DTOs de resposta para garantir que apenas dados necessários são expostos</li>
+            <li>Implementar auditoria de acesso (log de quais ferramentas foram chamadas e por quem)</li>
+            <li>Considerar criptografia em repouso (TDE) no SQL Server para dados de produção</li>
+            <li>Adicionar testes de segurança automatizados (SAST/DAST) no pipeline CI/CD</li>
+        </ul>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Sales MCP Server — Relatório de Segurança v1.0</p>
+        <p>Este documento é confidencial e destinado ao time de engenharia.</p>
+        <p>© 2026 — Gerado automaticamente via análise de código fonte</p>
+    </div>
+
+</div>
+
+<script>
+    document.getElementById('generated-date').textContent = new Date().toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' });
+</script>
+</body>
+</html>
+           

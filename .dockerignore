@@ -1,0 +1,7 @@
+**/bin/
+**/obj/
+.git/
+.vs/
+.idea/
+TestResults/
+secrets/*.txt

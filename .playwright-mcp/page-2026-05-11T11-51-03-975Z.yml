@@ -1,0 +1,93 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - link [ref=e4] [cursor=pointer]:
+      - /url: /servicosOnline/#
+      - img [ref=e6]
+      - img [ref=e8]
+    - text: 
+    - generic [ref=e9]:
+      - text: 
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - link "Validar Documentos" [ref=e12] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ValidarDocumentos
+            - text: 
+            - paragraph [ref=e13]: Validar Documentos
+        - listitem [ref=e14]:
+          - link "Pré-Cadastro" [ref=e15] [cursor=pointer]:
+            - /url: /servicosOnline/Precadastro/PreCadastro
+            - text: 
+            - paragraph [ref=e16]: Pré-Cadastro
+        - listitem [ref=e17]:
+          - link "Consulta Pública" [ref=e18] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ConsultaInscritos
+            - text: 
+            - paragraph [ref=e19]: Consulta Pública
+        - listitem [ref=e20]:
+          - link "Consulta protocolos e processos" [ref=e21] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ConsultaProtocolosProcessos
+            - text: 
+            - paragraph [ref=e22]: Consulta protocolos e processos
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: 
+      - heading "Consulta de Inscritos" [level=2] [ref=e30]:
+        - text: Consulta de
+        - strong [ref=e31]: Inscritos
+    - paragraph [ref=e33]: Utilize os filtros abaixo para consultar Profissionais/Empresas inscritos - CREF/SP
+    - generic:
+      - generic:
+        - generic:
+          - generic [ref=e34]:
+            - generic [ref=e35]: "Nº de inscrição no conselho:"
+            - textbox "Nº de inscrição no conselho:" [ref=e36]:
+              - /placeholder: ""
+              - text: 072680-G/SP
+          - generic [ref=e37]:
+            - generic [ref=e38]: "Nome:"
+            - textbox "Nome:" [ref=e39]:
+              - /placeholder: ""
+          - generic [ref=e41]:
+            - paragraph [ref=e43] [cursor=pointer]: Limpar
+            - paragraph [ref=e45] [cursor=pointer]: Consultar
+          - paragraph [ref=e47]: Por questões de segurança, a consulta retorna no máximo 100 registros.
+    - iframe [ref=e101]:
+      - generic [ref=f14e2]:
+        - generic [ref=f14e3]:
+          - checkbox "Não sou um robô" [ref=f14e7]
+          - generic [ref=f14e11]: Não sou um robô
+        - generic [ref=f14e15]: reCAPTCHA
+    - generic [ref=e102]:
+      - generic [ref=e103]:
+        - generic [ref=e104]:
+          - paragraph [ref=e105]: RAFAEL D AGOSTINO DE PADUA
+          - paragraph [ref=e106]: Nome
+        - generic [ref=e107]:
+          - generic [ref=e108]:
+            - paragraph [ref=e109]: LICENCIADO/BACHAREL
+            - paragraph [ref=e110]: Categoria
+          - generic [ref=e111]:
+            - paragraph [ref=e112]: 072680-G/SP
+            - paragraph [ref=e113]: Nº inscrição no conselho
+      - list [ref=e114]:
+        - listitem [ref=e115]:
+          - link "Dados de Inscrição" [ref=e116] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e117]:
+          - link "Especialidades" [ref=e118] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e119]:
+          - link "Dados de Contatos" [ref=e120] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e121]:
+          - link "Responsabilidades" [active] [ref=e122] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e123]:
+          - link "Áreas de atuação" [ref=e124] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e125]:
+        - text: 
+        - generic [ref=e142]:
+          - generic [ref=e143]: 
+          - paragraph [ref=e144]: Informações não disponíveis
+    - text: 

@@ -1,0 +1,86 @@
+- generic [ref=e1]:
+  - generic [ref=e2]:
+    - link [ref=e4] [cursor=pointer]:
+      - /url: /servicosOnline/#
+      - img [ref=e6]
+      - img [ref=e8]
+    - text: 
+    - generic [ref=e9]:
+      - text: 
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - link "Validar Documentos" [ref=e12] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ValidarDocumentos
+            - text: 
+            - paragraph [ref=e13]: Validar Documentos
+        - listitem [ref=e14]:
+          - link "Pré-Cadastro" [ref=e15] [cursor=pointer]:
+            - /url: /servicosOnline/Precadastro/PreCadastro
+            - text: 
+            - paragraph [ref=e16]: Pré-Cadastro
+        - listitem [ref=e17]:
+          - link "Consulta Pública" [ref=e18] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ConsultaInscritos
+            - text: 
+            - paragraph [ref=e19]: Consulta Pública
+        - listitem [ref=e20]:
+          - link "Consulta protocolos e processos" [ref=e21] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ConsultaProtocolosProcessos
+            - text: 
+            - paragraph [ref=e22]: Consulta protocolos e processos
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: 
+      - heading "Consulta de Inscritos" [level=2] [ref=e30]:
+        - text: Consulta de
+        - strong [ref=e31]: Inscritos
+    - paragraph [ref=e33]: Utilize os filtros abaixo para consultar Profissionais/Empresas inscritos - CREF/SP
+    - generic:
+      - generic:
+        - generic:
+          - generic [ref=e34]:
+            - generic [ref=e35]: "Nº de inscrição no conselho:"
+            - textbox "Nº de inscrição no conselho:" [ref=e36]:
+              - /placeholder: ""
+              - text: 081117-G/SP
+          - generic [ref=e37]:
+            - generic [ref=e38]: "Nome:"
+            - textbox "Nome:" [ref=e39]:
+              - /placeholder: ""
+          - generic [ref=e41]:
+            - paragraph [ref=e43] [cursor=pointer]: Limpar
+            - paragraph [ref=e45] [cursor=pointer]: Consultar
+          - paragraph [ref=e47]: Por questões de segurança, a consulta retorna no máximo 100 registros.
+    - iframe [ref=e53]:
+      - generic [ref=f1e2]:
+        - generic [ref=f1e3]:
+          - checkbox "Não sou um robô" [ref=f1e7]
+          - generic [ref=f1e11]: Não sou um robô
+        - generic [ref=f1e15]: reCAPTCHA
+    - text: 
+  - iframe [active] [ref=e57]:
+    - dialog [ref=f5e3]:
+      - generic [ref=f5e4]:
+        - generic [ref=f5e9]:
+          - text: Selecione todas as imagens com
+          - strong [ref=f5e10]: carros
+        - table [ref=f5e13]:
+          - rowgroup [ref=f5e14]:
+            - row [ref=f5e15]:
+              - button [ref=f5e16]
+              - button [ref=f5e19]
+              - button [ref=f5e22]
+            - row [ref=f5e25]:
+              - button [ref=f5e26]
+              - button [active] [ref=f5e29]
+              - button [ref=f5e32]
+            - row [ref=f5e35]:
+              - button [ref=f5e36]
+              - button [ref=f5e39]
+              - button [ref=f5e42]
+      - generic [ref=f5e48]:
+        - generic [ref=f5e49]:
+          - button "Obter novo teste" [ref=f5e51] [cursor=pointer]
+          - button "Obter teste de áudio" [ref=f5e53] [cursor=pointer]
+          - button "Ajuda" [ref=f5e55] [cursor=pointer]
+        - button "Validar" [ref=f5e57] [cursor=pointer]

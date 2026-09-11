@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Documentação Completa - Ferramentas MCP de Vendas</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --secondary-color: #1e40af;
+            --accent-color: #3b82f6;
+            --light-color: #f8fafc;
+            --dark-color: #1e293b;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --border-color: #e2e8f0;
+            --code-bg: #0f172a;
+            --sidebar-width: 280px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.6;
+            color: var(--dark-color);
+            background: var(--light-color);
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            border-right: 1px solid var(--border-color);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.05);
+        }
+
+        .sidebar-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header .version {
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        .nav-section {
+            margin-bottom: 2rem;
+        }
+
+        .nav-section h3 {
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            color: #64748b;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-links a {
+            display: block;
+            padding: 0.5rem 0.75rem;
+            color: var(--dark-color);
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s;
+            font-size: 0.9375rem;
+        }
+
+        .nav-links a:hover {
+            background: #f1f5f9;
+            color: var(--primary-color);
+        }
+
+        .nav-links a.active {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 500;
+        }
+
+        .tool-tag {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.125rem 0.5rem;
+            border-radius: 12px;
+            margin-left: 0.5rem;
+            background: #e0f2fe;
+            color: #0369a1;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            padding: 3rem;
+            max-width: 1200px;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+            scroll-margin-top: 2rem;
+        }
+
+        .section-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .section-header h2 {
+            font-size: 2rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-header .description {
+            color: #64748b;
+            font-size: 1.125rem;
+        }
+
+        /* Tool Card */
+        .tool-card {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            border: 1px solid var(--border-color);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .tool-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        .tool-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tool-title h3 {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .tool-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            background: #f1f5f9;
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            color: var(--primary-color);
+        }
+
+        .tool-description {
+            color: #475569;
+            margin-bottom: 1.5rem;
+            font-size: 1.0625rem;
+            line-height: 1.7;
+        }
+
+        /* Parameters Table */
+        .parameters-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            color: var(--dark-color);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .section-title::before {
+            content: '';
+            display: block;
+            width: 4px;
+            height: 1.25rem;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        th {
+            background: #f8fafc;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            font-weight: 600;
+            color: var(--dark-color);
+            border-bottom: 2px solid var(--border-color);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            vertical-align: top;
+        }
+
+        tr:hover td {
+            background: #f8fafc;
+        }
+
+        .param-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .param-type {
+            font-family: 'Monaco', 'Consolas', monospace;
+            background: #f1f5f9;
+            padding: 0.125rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8125rem;
+        }
+
+        .required {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .optional {
+            display: inline-block;
+            padding: 0.125rem 0.5rem;
+            background: var(--warning-color);
+            color: white;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* Code Blocks */
+        .code-section {
+            margin-bottom: 2rem;
+        }
+
+        .code-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 0;
+            overflow-x: auto;
+        }
+
+        .code-tab {
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: inherit;
+            font-size: 0.875rem;
+            color: #64748b;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .code-tab:hover {
+            color: var(--primary-color);
+        }
+
+        .code-tab.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .code-block {
+            background: var(--code-bg);
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        pre {
+            margin: 0;
+            color: #e2e8f0;
+            font-family: 'Monaco', 'Consolas', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem 1.5rem;
+            background: #1a2536;
+            border-bottom: 1px solid #334155;
+        }
+
+        .code-language {
+            color: #94a3b8;
+            font-size: 0.875rem;
+            font-family: 'Monaco', 'Consolas', monospace;
+        }
+
+        .copy-btn {
+            background: #334155;
+            color: #cbd5e1;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .copy-btn:hover {
+            background: #475569;
+            color: white;
+        }
+
+        /* Use Cases */
+        .use-cases {
+            display: grid;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .use-case {
+            background: #f0f9ff;
+            border-left: 4px solid var(--primary-color);
+            padding: 1.25rem;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .use-case h4 {
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.0625rem;
+        }
+
+        .use-case p {
+            color: #475569;
+            margin-bottom: 0;
+        }
+
+        /* Response Structure */
+        .response-structure {
+            background: #f8fafc;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .response-field {
+            margin-bottom: 0.75rem;
+            padding-left: 1rem;
+            border-left: 2px solid #cbd5e1;
+        }
+
+        .field-name {
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .field-type {
+            font-family: 'Monaco', 'Consolas', monospace;
+            color: #64748b;
+            font-size: 0.875rem;
+            margin-left: 0.5rem;
+        }
+
+        .field-description {
+            color: #475569;
+            font-size: 0.9375rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 4rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            text-align: center;
+            color: #64748b;
+            font-size: 0.875rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .sidebar {
+                position: static;
+                width: 100%;
+                height: auto;
+                border-right: none;
+                border-bottom: 1px solid var(--border-color);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            body {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                padding: 1.5rem;
+            }
+
+            .tool-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .code-tabs {
+                flex-wrap: wrap;
+            }
+        }
+
+        /* Utility Classes */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .badge-general {
+            background: #dbeafe;
+            color: #1d4ed8;
+        }
+
+        .badge-sales-rep {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .auth-badge {
+            background: #fef3c7;
+            color: #92400e;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+        }
+
+        .auth-badge::before {
+            content: '🔒';
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar Navigation -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h1>MCP Sales Tools</h1>
+            <div class="version">v1.0.0 • Documentação Completa</div>
+            <p style="margin-top: 0.5rem; color: #64748b; font-size: 0.875rem;">
+                Model Context Protocol • 12 Ferramentas Disponíveis
+            </p>
+        </div>
+
+        <div class="nav-section">
+            <h3>Introdução</h3>
+            <ul class="nav-links">
+                <li><a href="#overview" class="active">Visão Geral</a></li>
+                <li><a href="#authentication">Autenticação</a></li>
+                <li><a href="#clients">Clientes MCP Suportados</a></li>
+                <li><a href="#quick-start">Começo Rápido</a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Análise Geral de Vendas</h3>
+            <ul class="nav-links">
+                <li><a href="#get_revenue_by_period">get_revenue_by_period <span class="tool-tag">Faturamento</span></a></li>
+                <li><a href="#get_top_products">get_top_products <span class="tool-tag">Produtos</span></a></li>
+                <li><a href="#get_top_customers">get_top_customers <span class="tool-tag">Clientes</span></a></li>
+                <li><a href="#get_sales_by_channel">get_sales_by_channel <span class="tool-tag">Canais</span></a></li>
+                <li><a href="#get_order_status_summary">get_order_status_summary <span class="tool-tag">Status</span></a></li>
+                <li><a href="#get_recent_orders">get_recent_orders <span class="tool-tag">Pedidos</span></a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Análise de Vendedores</h3>
+            <ul class="nav-links">
+                <li><a href="#get_top_sales_reps">get_top_sales_reps <span class="tool-tag">Top Vendedores</span></a></li>
+                <li><a href="#get_sales_rep_performance_trend">get_sales_rep_performance_trend <span class="tool-tag">Evolução</span></a></li>
+                <li><a href="#get_sales_rep_commission_summary">get_sales_rep_commission_summary <span class="tool-tag">Comissões</span></a></li>
+                <li><a href="#get_sales_rep_customer_analysis">get_sales_rep_customer_analysis <span class="tool-tag">Clientes</span></a></li>
+                <li><a href="#get_sales_rep_comparative_analysis">get_sales_rep_comparative_analysis <span class="tool-tag">Comparativo</span></a></li>
+                <li><a href="#get_sales_rep_conversion_analysis">get_sales_rep_conversion_analysis <span class="tool-tag">Conversão</span></a></li>
+            </ul>
+        </div>
+
+        <div class="nav-section">
+            <h3>Recursos</h3>
+            <ul class="nav-links">
+                <li><a href="#faq">FAQ & Troubleshooting</a></li>
+                <li><a href="#glossary">Glossário</a></li>
+                <li><a href="#examples">Exemplos Completos</a></li>
+                <li><a href="#api-reference">Referência da API</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Overview Section -->
+        <section id="overview" class="section">
+            <div class="section-header">
+                <h2>Documentação Completa - Ferramentas MCP de Vendas</h2>
+                <p class="description">
+                    Guia completo para utilizar as 12 ferramentas de análise de vendas disponíveis no servidor MCP.
+                    Inclui exemplos detalhados para Cline, Claude Desktop, Codex, Manus e outros clientes MCP.
+                </p>
+            </div>
+
+            <div class="tool-card">
+                <h3>Sobre este Sistema</h3>
+                <p>O servidor MCP de Vendas fornece um conjunto abrangente de ferramentas para análise de dados de vendas,
+                permitindo extrair insights valiosos sobre performance, tendências e oportunidades de negócio.</p>
+
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem;">
+                    <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">📊 12 Ferramentas</h4>
+                        <p style="color: #475569; margin: 0;">6 de análise geral + 6 de análise de vendedores</p>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">🔒 Autenticação JWT</h4>
+                        <p style="color: #475569; margin: 0;">Todas as ferramentas requerem autenticação</p>
+                    </div>
+                    <div style="background: #f0f9ff; padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="color: var(--primary-color); margin-bottom: 0.5rem;">⚡ JSON-RPC 2.0</h4>
+                        <p style="color: #475569; margin: 0;">Protocolo padrão para comunicação MCP</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tool-card">
+                <h3>Estrutura das Ferramentas</h3>
+                <p>Todas as ferramentas seguem o mesmo padrão de implementação:</p>
+                
+                <div class="response-structure">
+                    <div class="response-field">
+                        <span class="field-name">Nome da Ferramenta</span>
+                        <span class="field-type">string</span>
+                        <p class="field-description">Identificador único no formato snake_case (ex: get_revenue_by_period)</p>
+                    </div>
+                    <div class="response-field">
+                        <span class="field-name">Parâmetros</span>
+                        <span class="field-type">object</span>
+                        <p class="field-description">Todos os parâmetros são validados e documentados com descrições claras</p>
+                    </div>
+                    <div class="response-field">
+                        <span class="field-name">Retorno</span>
+                        <span class="field-type">DTO específico</span>
+                        <p class="field-description">Estrutura tipada com todos os campos necessários para análise</p>
+                    </div>
+                    <div class="response-field">
+                        <span class="field-name">Autenticação</span>
+                        <span class="field-type">[Authorize] attribute</span>
+                        <p class="field-description">Todas as ferramentas requerem token JWT válido</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Authentication Section -->
+        <section id="authentication" class="section">
+            <div class="section-header">
+                <h2>Autenticação e Segurança</h2>
+                <p class="description">
+                    Todas as ferramentas requerem autenticação via JWT. Configure seu cliente MCP com o token apropriado.
+                </p>
+            </div>
+
+            <div class="tool-card">
+                <h3>Configuração do Token JWT</h3>
+                
+                <div class="code-section">
+                    <div class="code-tabs">
+                        <button class="code-tab active" onclick="switchTab('claude-config')">Claude Desktop</button>
+                        <button class="code-tab" onclick="switchTab('cline-config')">Cline</button>
+                        <button class="code-tab" onclick="switchTab('curl-auth')">cURL</button>
+                    </div>
+
+                    <div id="claude-config" class="code-block" style="display: block;">
+                        <div class="code-header">
+                            <span class="code-language">JSON</span>
+                            <button class="copy-btn" onclick="copyCode('claude-config')">Copiar</button>
+                        </div>
+                        <div class="code-content">
+                            <pre><code>// ~/Library/Application Support/Claude/claude_desktop_config.json
+{
+  "mcpServers": {
+    "sales-analytics": {
+      "command": "dotnet",
+      "args": [
+        "run",
+        "--project",
+        "d:/iaagentsautonomous/mcp-sales/Sales.Mcp.Server"
+      ],
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "JWT_SECRET": "sua-chave-secreta-aqui"
+      }
+    }
+  }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div id="cline-config" class="code-block" style="display: none;">
+                        <div class="code-header">
+                            <span class="code-language">JSON</span>
+                            <button class="copy-btn" onclick="copyCode('cline-config')">Copiar</button>
+                        </div>
+                        <div class="code-content">
+                            <pre><code>// Configuração do Cline para usar as ferramentas MCP
+// Use os comandos execute_command e access_mcp_resource
+
+// Exemplo de como chamar uma ferramenta no Cline:
+{
+  "tool": "access_mcp_resource",
+  "params": {
+    "server_name": "sales-analytics",
+    "uri": "tool://sales-analytics/get_revenue_by_period"
+  }
+}
+
+// Ou usando execute_command para chamar via cURL:
+{
+  "tool": "execute_command",
+  "params": {
+    "command": "curl -X POST http://localhost:5000/mcp/tools/call \\\n  -H \"Authorization: Bearer SEU_TOKEN_JWT\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"jsonrpc\":\"2.0\",\"method\":\"tools/call\",\"params\":{\"name\":\"get_revenue_by_period\",\"arguments\":{\"startDate\":\"2025-01-01\",\"endDate\":\"2025-12-31\",\"groupBy\":\"month\"}},\"id\":1}'",
+    "requires_approval": false
+  }
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div id="curl-auth" class="code-block" style="display: none;">
+                        <div class="code-header">
+                            <span class="code-language">bash</span>
+                            <button class="copy-btn" onclick="copyCode('curl-auth')">Copiar</button>
+                        </div>
+                        <div class="code-content">
+                            <pre><code># Obter token JWT (exemplo)
+curl -X POST http://localhost:5000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username":"admin","password":"senha-segura"}'
+
+# Resposta esperada:
+# {
+#   "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+#   "expiresIn": 3600
+# }
+
+# Usar token nas requisições MCP
+curl -X POST http://localhost:5000/mcp/tools/call \
+  -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." \
+  -H "Content-Type: application/json" \
+  -d '{
+    "jsonrpc": "2.0",
+    "method": "tools/call",
+    "params": {
+      "name": "get_revenue_by_period",
+      "arguments": {
+        "startDate": "2025-01-01",
+        "endDate": "2025-12-31",
+        "groupBy": "month"
+      }
+    },
+    "id": 1
+  }'</code></pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="use-cases">
+                    <div class="use-case">
+                        <h4>⚠️ Importante: Ambiente de Desenvolvimento</h4>
+                        <p>Para desenvolvimento local, configure a variável de ambiente <code>ASPNETCORE_ENVIRONMENT=Development</code> para desabilitar algumas verificações de segurança.</p>
+                    </div>
+                    <div class="use-case">
+                        <h4>🔐 Produção</h4>
+                        <p>Em produção, sempre use HTTPS, configure JWT_SECRET adequadamente e implemente rate limiting.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Clients Section -->
+        <section id="clients" class="section">
+            <div class="section-header">
+                <h2>Clientes MCP Suportados</h2>
+                <p class="description">
+                    Exemplos específicos de como usar as ferramentas em diferentes clientes MCP.
+                </p>
+            </div>
+
+            <div class="tool-card">
+                <h3>Configuração por Cliente</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Configuração</th>
+                            <th>Exemplo de Uso</th>
+                            <th>Notas</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Cline</strong></td>
+                            <td>Usar <code>execute_command</code> ou <code>access_mcp_resource</code></td>
+                            <td>Ver exemplo na aba "Cline" acima</td>
+                            <td>Ideal para automação e scripts</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Claude Desktop</strong></td>
+                            <td>Arquivo <code>claude_desktop_config.json</code></td>
+                            <td>Configuração automática via JSON</td>
+                            <td>Mais simples para uso interativo</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Codex/Manus</strong></td>
+                            <td>Configuração via UI ou arquivo YAML</td>
+                            <td>Similar ao Claude Desktop</td>
+                            <td>Interface gráfica disponível</td>
+                        </tr>
+                        <tr>
+                            <td><strong>cURL/HTTP</strong></td>
+                            <td>Requisições HTTP diretas</td>
+                            <td>Para testes e integrações customizadas</td>
+                            <td>Mais controle, mais complexidade</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Quick Start Section -->
+        <section id="quick-start" class="section">
+            <div class="section-header">
+                <h2>Começo Rápido</h2>
+                <p class="description">
+                    Passos rápidos para começar a usar as ferramentas MCP de vendas.
+                </p>
+            </div>
+
+            <div class="tool-card">
+                <h3>Passo a Passo em 5 Minutos</h3>
+                
+                <div style="counter-reset: step; margin-left: 1.5rem;">
+                    <div style="position: relative; margin-bottom: 2rem; padding-left: 2.5rem;">
+                        <div style="position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">1</div>
+                        <h4 style="margin-bottom: 0.5rem;">Inicie o Servidor MCP</h4>
+                        <p>Execute o servidor em modo desenvolvimento:</p>
+                        <div class="code-block">
+                            <div class="code-content">
+                                <pre><code>cd d:/iaagentsautonomous/mcp-sales
+dotnet run --project Sales.Mcp.Server</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="position: relative; margin-bottom: 2rem; padding-left: 2.5rem;">
+                        <div style="position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">2</div>
+                        <h4 style="margin-bottom: 0.5rem;">Configure seu Cliente MCP</h4>
+                        <p>Adicione a configuração do servidor ao seu cliente preferido (Claude Desktop, Cline, etc.)</p>
+                    </div>
+
+                    <div style="position: relative; margin-bottom: 2rem; padding-left: 2.5rem;">
+                        <div style="position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">3</div>
+                        <h4 style="margin-bottom: 0.5rem;">Teste uma Ferramenta</h4>
+                        <p>Use a ferramenta <code>get_revenue_by_period</code> para verificar se está funcionando:</p>
+                        <div class="code-block">
+                            <div class="code-content">
+                                <pre><code>{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get_revenue_by_period",
+    "arguments": {
+      "startDate": "2025-01-01",
+      "endDate": "2025-01-31",
+      "groupBy": "day"
+    }
+  },
+  "id": 1
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="position: relative; margin-bottom: 2rem; padding-left: 2.5rem;">
+                        <div style="position: absolute; left: 0; top: 0; width: 2rem; height: 2rem; background: var(--primary-color); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;">4</div>
+                        <h4 style="margin-bottom: 0.5rem;">Explore Outras Ferramentas</h4>
+                        <p>Consulte a documentação de cada ferramenta abaixo para exemplos específicos.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Tools Documentation will be added here -->
+        <div id="tools-documentation">
+            <!-- Tools will be dynamically inserted here -->
+        </div>
+
+        <!-- Additional Resources -->
+        <section id="faq" class="section">
+            <div class="section-header">
+                <h2>FAQ & Troubleshooting</h2>
+                <p class="description">
+                    Perguntas frequentes e soluções para problemas comuns ao usar as ferramentas MCP.
+                </p>
+            </div>
+
+            <div class="tool-card">
+                <h3>Problemas Comuns e Soluções</h3>
+                
+                <div class="use-cases">
+                    <div class="use-case">
+                        <h4>❌ Erro: "Authentication required"</h4>
+                        <p><strong>Solução:</strong> Configure o token JWT no seu cliente MCP. Verifique a seção de Autenticação acima.</p>
+                    </div>
+                    <div class="use-case">
+                        <h4>❌ Erro: "Invalid date format"</h4>
+                        <p><strong>Solução:</strong> Use o formato <code>yyyy-MM-dd</code> para todas as datas (ex: 2025-01-01).</p>
+                    </div>
+                    <div class="use-case">
+                        <h4>❌ Erro: "Tool not found"</h4>
+                        <p><strong>Solução:</strong> Verifique se o servidor MCP está rodando e se o nome da ferramenta está correto.</p>
+                    </div>
+                    <div class="use-case">
+                        <h4>❌ Erro: "Invalid parameter value"</h4>
+                        <p><strong>Solução:</strong> Consulte a tabela de parâmetros para ver os valores permitidos para cada ferramenta.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Glossary -->
+        <section id="glossary" class="section">
+            <div class="section-header">
+                <h2>Glossário</h2>
+                <p class="description">
+                    Definições de termos técnicos e de negócio utilizados nas ferramentas MCP.
+                </p>
+            </div>
+
+            <div class="tool-card">
+                <h3>Termos Técnicos</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Termo</th>
+                            <th>Definição</th>
+                            <th>Exemplo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>JSON-RPC</strong></td>
+                            <td>Protocolo de chamada remota baseado em JSON</td>
+                            <td>Formato padrão para comunicação MCP</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DTO</strong></td>
+                            <td>Data Transfer Object - Objeto para transferência de dados</td>
+                            <td>Estrutura tipada de retorno das ferramentas</td>
+                        </tr>
+                        <tr>
+                            <td><strong>JWT</strong></td>
+                            <td>JSON Web Token - Token de autenticação</td>
+                            <td>Usado para autenticar requisições MCP</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MCP</strong></td>
+                            <td>Model Context Protocol</td>
+                            <td>Protocolo para conectar LLMs a ferramentas externas</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3 style="margin-top: 2rem;">Termos de Negócio</h3>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Termo</th>
+                            <th>Definição</th>
+                            <th>Cálculo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Gross Revenue</strong></td>
+                            <td>Faturamento bruto (antes de descontos/reembolsos)</td>
+                            <td>Soma de todos os valores de pedidos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Net Sales</strong></td>
+                            <td>Vendas líquidas (após descontos)</td>
+                            <td>Gross Revenue - Descontos</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Average Order Value</strong></td>
+                            <td>Ticket médio</td>
+                            <td>Gross Revenue ÷ Order Count</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Conversion Rate</strong></td>
+                            <td>Taxa de conversão</td>
+                            <td>(Converted Orders ÷ Total Opportunities) × 100</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Customer Retention Rate</strong></td>
+                            <td>Taxa de retenção de clientes</td>
+                            <td>(Repeat Customers ÷ Total Customers) × 100</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>Documentação MCP Sales Tools • Última atualização: 22 de Abril de 2026</p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #94a3b8;">
+                Sistema desenvolvido com .NET 8 • Model Context Protocol • 12 Ferramentas Disponíveis
+            </p>
+            <p style="margin-top: 0.5rem; font-size: 0.75rem; color: #94a3b8;">
+                Compatível com: Cline, Claude Desktop, Codex, Manus e outros clientes MCP
+            </p>
+        </footer>
+    </main>
+
+    <!-- Incluir dados das ferramentas -->
+    <script src="tools_data.js"></script>
+    <!-- Incluir script de renderização -->
+    <script src="render_tools.js"></script>
+
+    <script>
+        // Tab switching functionality (para abas gerais)
+        function switchTab(tabId) {
+            // Hide all code blocks
+            document.querySelectorAll('.code-block').forEach(block => {
+                block.style.display = 'none';
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.code-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected code block
+            document.getElementById(tabId).style.display = 'block';
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    // Update active nav link
+                    document.querySelectorAll('.nav-links a').forEach(link => {
+                        link.classList.remove('active');
+                    });
+                    this.classList.add('active');
+                    
+                    // Scroll to element
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 20,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // Inicializar navegação ativa baseada no scroll
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.nav-links a');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (scrollY >= (sectionTop - 100)) {
+                    currentSection = section.getAttribute('id');
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${currentSection}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

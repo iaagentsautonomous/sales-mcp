@@ -1,0 +1,114 @@
+name: sales-mcp
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: sales-sqlserver
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: "Developer"
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        export MSSQL_SA_PASSWORD="$$(cat /run/secrets/sql_sa_password)"
+        exec /opt/mssql/bin/sqlservr
+    volumes:
+      - sql-data:/var/opt/mssql
+    networks:
+      - sales-net
+    secrets:
+      - sql_sa_password
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "/opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P \"$$(cat /run/secrets/sql_sa_password)\" -C -Q \"SELECT 1\" > /dev/null || exit 1"
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 30
+      start_period: 20s
+
+  db-bootstrap:
+    build:
+      context: .
+      dockerfile: Sales.Mcp.DbBootstrap/Dockerfile
+    container_name: sales-db-bootstrap
+    depends_on:
+      sqlserver:
+        condition: service_healthy
+    environment:
+      Bootstrap__Mode: demo
+      Bootstrap__AdminConnectionString: Server=sqlserver,1433;User ID=sa;Encrypt=True;Trust Server Certificate=True;Connect Timeout=5;Pooling=false;
+      Bootstrap__AdminPasswordFile: /run/secrets/sql_sa_password
+      Bootstrap__ReaderLogin: mcp_reader
+      Bootstrap__ReaderPasswordFile: /run/secrets/sql_reader_password
+      Bootstrap__DatabaseName: A2A
+      Bootstrap__ScriptsPath: /app/sql
+      DOTNET_ENVIRONMENT: Production
+    networks:
+      - sales-net
+    volumes:
+      - ./sql:/app/sql:ro
+    secrets:
+      - sql_sa_password
+      - sql_reader_password
+    restart: "no"
+
+  sales-mcp:
+    build:
+      context: .
+      dockerfile: Sales.Mcp.Server/Dockerfile
+    container_name: sales-mcp-server
+    depends_on:
+      db-bootstrap:
+        condition: service_completed_successfully
+    environment:
+      ASPNETCORE_URLS: http://0.0.0.0:8080
+      DOTNET_ENVIRONMENT: Production
+      ConnectionStrings__ReadOnly: Server=sqlserver,1433;Database=A2A;User ID=mcp_reader;Encrypt=True;Trust Server Certificate=True;Connect Timeout=5;Application Name=SalesMcpServer;
+      Database__ReadOnlyPasswordFile: /run/secrets/sql_reader_password
+      Mcp__BearerTokenFile: /run/secrets/mcp_bearer_token
+      Mcp__AllowedOrigins: http://localhost:6274,http://127.0.0.1:6274,http://localhost:8080,http://127.0.0.1:8080
+      Mcp__RequestTimeoutSeconds: "30"
+      Mcp__MaxPageSize: "100"
+      Mcp__MaxRequestBodyBytes: "131072"
+      RateLimiting__McpEndpoint__PermitLimit: "100"
+      RateLimiting__McpEndpoint__WindowInMinutes: "1"
+      RateLimiting__McpEndpoint__QueueLimit: "5"
+    ports:
+      - "127.0.0.1:8080:8080"
+    networks:
+      - sales-net
+    secrets:
+      - sql_reader_password
+      - mcp_bearer_token
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS http://127.0.0.1:8080/health/ready > /dev/null || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+
+networks:
+  sales-net:
+    driver: bridge
+
+volumes:
+  sql-data:
+
+secrets:
+  sql_sa_password:
+    file: ./secrets/sql_sa_password.txt
+  sql_reader_password:
+    file: ./secrets/sql_reader_password.txt
+  mcp_bearer_token:
+    file: ./secrets/mcp_bearer_token.txt

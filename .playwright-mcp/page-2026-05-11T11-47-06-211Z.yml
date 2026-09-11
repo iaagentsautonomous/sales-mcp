@@ -1,0 +1,100 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e2]:
+    - link [ref=e4] [cursor=pointer]:
+      - /url: /servicosOnline/#
+      - img [ref=e6]
+      - img [ref=e8]
+    - text: 
+    - generic [ref=e9]:
+      - text: 
+      - list [ref=e10]:
+        - listitem [ref=e11]:
+          - link "Validar Documentos" [ref=e12] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ValidarDocumentos
+            - text: 
+            - paragraph [ref=e13]: Validar Documentos
+        - listitem [ref=e14]:
+          - link "Pré-Cadastro" [ref=e15] [cursor=pointer]:
+            - /url: /servicosOnline/Precadastro/PreCadastro
+            - text: 
+            - paragraph [ref=e16]: Pré-Cadastro
+        - listitem [ref=e17]:
+          - link "Consulta Pública" [ref=e18] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ConsultaInscritos
+            - text: 
+            - paragraph [ref=e19]: Consulta Pública
+        - listitem [ref=e20]:
+          - link "Consulta protocolos e processos" [ref=e21] [cursor=pointer]:
+            - /url: /servicosOnline/Publico/ConsultaProtocolosProcessos
+            - text: 
+            - paragraph [ref=e22]: Consulta protocolos e processos
+  - generic [ref=e26]:
+    - generic [ref=e27]:
+      - generic [ref=e29]: 
+      - heading "Consulta de Inscritos" [level=2] [ref=e30]:
+        - text: Consulta de
+        - strong [ref=e31]: Inscritos
+    - paragraph [ref=e33]: Utilize os filtros abaixo para consultar Profissionais/Empresas inscritos - CREF/SP
+    - generic:
+      - generic:
+        - generic:
+          - generic [ref=e34]:
+            - generic [ref=e35]: "Nº de inscrição no conselho:"
+            - textbox "Nº de inscrição no conselho:" [ref=e36]:
+              - /placeholder: ""
+              - text: 081117-G/SP
+          - generic [ref=e37]:
+            - generic [ref=e38]: "Nome:"
+            - textbox "Nome:" [ref=e39]:
+              - /placeholder: ""
+          - generic [ref=e41]:
+            - paragraph [ref=e43] [cursor=pointer]: Limpar
+            - paragraph [ref=e45] [cursor=pointer]: Consultar
+          - paragraph [ref=e47]: Por questões de segurança, a consulta retorna no máximo 100 registros.
+    - iframe [ref=e60]:
+      - generic [ref=f8e2]:
+        - generic [ref=f8e3]:
+          - checkbox "Não sou um robô" [ref=f8e7]
+          - generic [ref=f8e11]: Não sou um robô
+        - generic [ref=f8e15]: reCAPTCHA
+    - generic [ref=e61]:
+      - generic [ref=e62]:
+        - generic [ref=e63]:
+          - paragraph [ref=e64]: JOAO PAULO RIBEIRO DA SILVA
+          - paragraph [ref=e65]: Nome
+        - generic [ref=e66]:
+          - generic [ref=e67]:
+            - paragraph [ref=e68]: LICENCIADO/BACHAREL
+            - paragraph [ref=e69]: Categoria
+          - generic [ref=e70]:
+            - paragraph [ref=e71]: 081117-G/SP
+            - paragraph [ref=e72]: Nº inscrição no conselho
+      - list [ref=e73]:
+        - listitem [ref=e74]:
+          - link "Dados de Inscrição" [ref=e75] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e76]:
+          - link "Especialidades" [ref=e77] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e78]:
+          - link "Dados de Contatos" [ref=e79] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e80]:
+          - link "Responsabilidades" [ref=e81] [cursor=pointer]:
+            - /url: "#"
+        - listitem [ref=e82]:
+          - link "Áreas de atuação" [ref=e83] [cursor=pointer]:
+            - /url: "#"
+      - generic [ref=e84]:
+        - generic [ref=e85]:
+          - generic [ref=e86]:
+            - paragraph [ref=e87]: DEFINITIVO
+            - paragraph [ref=e88]: Tipo de inscrição
+          - generic [ref=e89]:
+            - paragraph [ref=e90]: 13/05/2010
+            - paragraph [ref=e91]: Data inscrição
+          - generic [ref=e92]:
+            - paragraph [ref=e93]: ATIVO
+            - paragraph [ref=e94]: Situação
+        - text:  
+    - text: 

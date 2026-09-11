@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+.idea/
+
+secrets/*.txt
+!secrets/*.example.txt
+
+TestResults/
