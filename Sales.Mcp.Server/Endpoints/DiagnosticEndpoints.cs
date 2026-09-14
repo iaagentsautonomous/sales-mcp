@@ -3,6 +3,9 @@ using Sales.Mcp.Server.Health;
 
 namespace Sales.Mcp.Server.Endpoints;
 
+/// <summary>
+/// Static class
+/// </summary>
 public static class DiagnosticEndpoints
 {
     public static IEndpointRouteBuilder MapDiagnosticEndpoints(this IEndpointRouteBuilder endpoints)
