@@ -1,0 +1,47 @@
+name: Deploy Automático K8s
+
+on:
+  push:
+    branches:
+      - main # Dispara o deploy sempre que houver push na branch main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout do código
+      uses: actions/checkout@v4
+
+    - name: Configurar o Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Login no Docker Hub
+      uses: docker/login-action@v3
+      with:
+        username: ${{ secrets.DOCKER_USERNAME }}
+        password: ${{ secrets.DOCKER_PASSWORD }}
+
+    - name: Construir e Enviar Imagem Docker
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        push: true
+        tags: |
+          ${{ secrets.DOCKER_USERNAME }}/minha-app:latest
+          ${{ secrets.DOCKER_USERNAME }}/minha-app:${{ github.sha }}
+
+    - name: Configurar Contexto do Kubernetes
+      uses: azure/k8s-set-context@v4
+      with:
+        method: kubeconfig
+        kubeconfig: ${{ secrets.KUBE_CONFIG }}
+
+    - name: Atualizar Manifesto do Kubernetes
+      run: |
+        # Substitui a tag da imagem no arquivo deployment.yaml pela tag da build atual
+        sed -i 's|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/minha-app:${{ github.sha }}|g' k8s/deployment.yaml
+
+    - name: Executar o Deploy no Cluster
+      run: |
+        kubectl apply -f k8s/deployment.yaml

@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sales-mcp-deployment
+  labels:
+    app: sales-mcp
+namespace: default # Altere se usar outro namespace
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sales-mcp
+  template:
+    metadata:
+      labels:
+        app: sales-mcp
+    spec:
+      containers:
+      - name: sales-mcp-container
+        image: knowbr/sales-mcp:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080 # Altere para a porta que o seu MCP Server escuta internamente
+        # Se o seu MCP precisar de variáveis de ambiente, adicione-as aqui:
+        # env:
+        # - name: ConnectionString
+        #   value: "sua-string-aqui"
+      
+      # Obrigatório para repositórios privados do Docker Hub
+      imagePullSecrets:
+      - name: dockerhub-secret
