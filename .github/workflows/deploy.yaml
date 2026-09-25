@@ -26,10 +26,11 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
+        file: Sales.Mcp.Server/Dockerfile # Aponta para o Dockerfile da sua subpasta .NET
         push: true
         tags: |
-          ${{ secrets.DOCKER_USERNAME }}/minha-app:latest
-          ${{ secrets.DOCKER_USERNAME }}/minha-app:${{ github.sha }}
+          knowbr/sales-mcp:latest
+          knowbr/sales-mcp:${{ github.sha }}
 
     - name: Configurar Contexto do Kubernetes
       uses: azure/k8s-set-context@v4
@@ -39,8 +40,8 @@ jobs:
 
     - name: Atualizar Manifesto do Kubernetes
       run: |
-        # Substitui a tag da imagem no arquivo deployment.yaml pela tag da build atual
-        sed -i 's|image: .*|image: ${{ secrets.DOCKER_USERNAME }}/minha-app:${{ github.sha }}|g' k8s/deployment.yaml
+        # Substitui a tag da imagem no seu arquivo deployment pelo novo ID do commit
+        sed -i 's|image: .*|image: knowbr/sales-mcp:${{ github.sha }}|g' k8s/deployment.yaml
 
     - name: Executar o Deploy no Cluster
       run: |
