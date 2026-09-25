@@ -29,6 +29,10 @@ spec:
             secretKeyRef:
               name: mcp-database-secret
               key: connection-string
+              
+        # Aponta para onde o Kubernetes vai montar o arquivo de texto com a senha
+        - name: Database__ReadOnlyPasswordFile
+          value: "/app/secrets/readonly-password.txt"
 
       
       # Corrigido o alinhamento para o nível da spec do Pod
