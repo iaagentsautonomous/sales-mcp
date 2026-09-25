@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sales-mcp-deployment
-  namespace: default # Ajustado com 2 espaços de recuo (dentro de metadata)
+  namespace: default
   labels:
     app: sales-mcp
 spec:
@@ -20,21 +20,40 @@ spec:
         image: knowbr/sales-mcp:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080 # Altere para a porta interna da sua aplicação, se necessário
+        - containerPort: 8080
         
-        # Adicione este bloco abaixo para injetar as credenciais do banco:
         env:
+        # 1. Alimenta o GetConnectionString("ReadOnly") via Secret do K8s
         - name: ConnectionStrings__ReadOnly
           valueFrom:
             secretKeyRef:
               name: mcp-database-secret
               key: connection-string
-              
-        # Aponta para onde o Kubernetes vai montar o arquivo de texto com a senha
+        
+        # 2. Alimenta a propriedade databaseOptions.ReadOnlyPasswordFile com o caminho do Linux
         - name: Database__ReadOnlyPasswordFile
           value: "/app/secrets/readonly-password.txt"
 
-      
-      # Corrigido o alinhamento para o nível da spec do Pod
+        # 3. Alimenta a configuração do Token Bearer exigido pelo MCP
+        - name: McpOptions__BearerTokenFile
+          value: "/app/secrets/bearer-token.txt"
+
+        # Aponta onde o Kubernetes vai montar a pasta de segredos
+        volumeMounts:
+        - name: mcp-secrets-volume
+          mountPath: /app/secrets
+          readOnly: true
+
       imagePullSecrets:
       - name: dockerhub-secret
+
+      # Cria os arquivos .txt em tempo de execução usando o Secret da VPS
+      volumes:
+      - name: mcp-secrets-volume
+        secret:
+          secretName: mcp-database-secret
+          items:
+          - key: db-password
+            path: readonly-password.txt
+          - key: mcp-token
+            path: bearer-token.txt
