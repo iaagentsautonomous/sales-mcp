@@ -21,6 +21,15 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 8080 # Altere para a porta interna da sua aplicação, se necessário
+        
+        # Adicione este bloco abaixo para injetar as credenciais do banco:
+        env:
+        - name: ConnectionStrings__ReadOnly
+          valueFrom:
+            secretKeyRef:
+              name: mcp-database-secret
+              key: connection-string
+
       
       # Corrigido o alinhamento para o nível da spec do Pod
       imagePullSecrets:
