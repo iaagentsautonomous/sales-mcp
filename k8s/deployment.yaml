@@ -23,33 +23,30 @@ spec:
         - containerPort: 8080
         
         env:
+        # 1. Alimenta o GetConnectionString("ReadOnly") do C#
         - name: ConnectionStrings__ReadOnly
           valueFrom:
             secretKeyRef:
               name: mcp-database-secret
               key: connection-string
         
-        # Mudamos para /tmp/ que possui permissão irrestrita de leitura/escrita no Linux
-        - name: Database__ReadOnlyPasswordFile
-          value: "/tmp/readonly-password.txt"
+        # 2. Injeta a senha direto na memória (Ativa o Builder do C#)
+        - name: Database__ReadOnlyPassword
+          valueFrom:
+            secretKeyRef:
+              name: mcp-database-secret
+              key: db-password
 
+        # 3. Injeta o Token Bearer direto na memória (Ativa a nova lógica do FileTokenProvider)
+        - name: McpOptions__BearerToken
+          valueFrom:
+            secretKeyRef:
+              name: mcp-database-secret
+              key: mcp-token
+
+        # 4. Evita que a validação [Required] do DataAnnotations falhe ao iniciar o Host
         - name: McpOptions__BearerTokenFile
-          value: "/tmp/bearer-token.txt"
-
-        volumeMounts:
-        - name: mcp-secrets-volume
-          mountPath: /tmp
-          readOnly: false # Permite que o container manipule a pasta se necessário
+          value: "not-used-in-production"
 
       imagePullSecrets:
       - name: dockerhub-secret
-
-      volumes:
-      - name: mcp-secrets-volume
-        secret:
-          secretName: mcp-database-secret
-          items:
-          - key: db-password
-            path: readonly-password.txt
-          - key: mcp-token
-            path: bearer-token.txt

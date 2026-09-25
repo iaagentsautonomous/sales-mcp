@@ -1,3 +1,5 @@
+using System;
+using System.IO;
 using Microsoft.Extensions.Options;
 using Sales.Mcp.Server.Configuration;
 
@@ -17,6 +19,14 @@ public sealed class FileTokenProvider
 
     public string GetRequiredToken()
     {
+        // 1. Tenta obter o token diretamente da memória (Variável injetada pela Secret do K8s)
+        var tokenFromEnv = Environment.GetEnvironmentVariable("McpOptions__BearerToken");
+        if (!string.IsNullOrEmpty(tokenFromEnv))
+        {
+            return tokenFromEnv.Trim();
+        }
+
+        // 2. EM DESENVOLVIMENTO (Local): Comportamento original lendo o arquivo físico
         lock (_sync)
         {
             var info = new FileInfo(_tokenFile);
