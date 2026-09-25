@@ -2,9 +2,9 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sales-mcp-deployment
+  namespace: default # Ajustado com 2 espaços de recuo (dentro de metadata)
   labels:
     app: sales-mcp
-namespace: default # Altere se usar outro namespace
 spec:
   replicas: 1
   selector:
@@ -20,12 +20,8 @@ spec:
         image: knowbr/sales-mcp:latest
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080 # Altere para a porta que o seu MCP Server escuta internamente
-        # Se o seu MCP precisar de variáveis de ambiente, adicione-as aqui:
-        # env:
-        # - name: ConnectionString
-        #   value: "sua-string-aqui"
+        - containerPort: 8080 # Altere para a porta interna da sua aplicação, se necessário
       
-      # Obrigatório para repositórios privados do Docker Hub
+      # Corrigido o alinhamento para o nível da spec do Pod
       imagePullSecrets:
       - name: dockerhub-secret
