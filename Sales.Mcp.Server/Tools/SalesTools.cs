@@ -134,5 +134,25 @@ public class SalesTools
         [Description("Data final no formato yyyy-MM-dd.")] string endDate,
         CancellationToken cancellationToken)
         => _analyticsService.GetSalesRepComparativeAnalysisAsync(startDate, endDate, cancellationToken);
+
+    [McpServerTool(Name = "get_sales_targets", Title = "Sales targets")]
+    [Description("Retorna as metas de venda por vendedor e mes, dentro de um intervalo de datas.")]
+    [Authorize]
+    public Task<SalesTargetResultDto> GetSalesTargetsAsync(
+        [Description("Data inicial no formato yyyy-MM-dd.")] string startDate,
+        [Description("Data final no formato yyyy-MM-dd.")] string endDate,
+        [Description("Codigo do vendedor (ex: REP001); opcional.")] string? salesRepCode,
+        CancellationToken cancellationToken)
+        => _analyticsService.GetSalesTargetsAsync(startDate, endDate, salesRepCode, cancellationToken);
+
+    [McpServerTool(Name = "get_sales_target_attainment", Title = "Sales target attainment")]
+    [Description("Compara a meta de venda com o faturamento real por vendedor e mes, com percentual de atingimento, dentro de um intervalo de datas.")]
+    [Authorize]
+    public Task<SalesTargetAttainmentResultDto> GetSalesTargetAttainmentAsync(
+        [Description("Data inicial no formato yyyy-MM-dd.")] string startDate,
+        [Description("Data final no formato yyyy-MM-dd.")] string endDate,
+        [Description("Codigo do vendedor (ex: REP001); opcional.")] string? salesRepCode,
+        CancellationToken cancellationToken)
+        => _analyticsService.GetSalesTargetAttainmentAsync(startDate, endDate, salesRepCode, cancellationToken);
 }
 

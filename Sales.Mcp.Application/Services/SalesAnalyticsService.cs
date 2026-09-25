@@ -595,4 +595,93 @@ public sealed class SalesAnalyticsService
 
         return new SalesRepComparativeResultDto(startDate, endDate, result);
     }
+
+    public async Task<SalesTargetResultDto> GetSalesTargetsAsync(string startDate, string endDate, string? salesRepCode, CancellationToken cancellationToken)
+    {
+        var range = _validator.ValidateDateRange(startDate, endDate);
+        var normalizedSalesRepCode = _validator.NormalizeOptionalCode(salesRepCode);
+        var startDateLiteral = DateLiteral(range.Start);
+        var endDateExclusiveLiteral = DateLiteral(range.End.AddDays(1));
+        var salesRepCodeLiteral = NullableStringLiteral(normalizedSalesRepCode);
+
+        var sql = $"""
+            SELECT
+                sr."SalesRepCode",
+                sr."FullName",
+                st."TargetYear"::int AS "TargetYear",
+                st."TargetMonth"::int AS "TargetMonth",
+                st."TargetAmount",
+                st."Notes",
+                st."IsActive"
+            FROM sales."SalesTarget" AS st
+            INNER JOIN sales."SalesRep" AS sr
+                ON sr."SalesRepId" = st."SalesRepId"
+            WHERE make_date(st."TargetYear"::int, st."TargetMonth"::int, 1) >= {startDateLiteral}
+              AND make_date(st."TargetYear"::int, st."TargetMonth"::int, 1) < {endDateExclusiveLiteral}
+              AND ({salesRepCodeLiteral} IS NULL OR sr."SalesRepCode" = {salesRepCodeLiteral})
+            ORDER BY st."TargetYear", st."TargetMonth", sr."SalesRepCode";
+            """;
+
+        await using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
+        var rows = (await connection.QueryAsync<SalesTargetDto>(new CommandDefinition(
+            sql,
+            cancellationToken: cancellationToken))).AsList();
+
+        return new SalesTargetResultDto(startDate, endDate, normalizedSalesRepCode, rows);
+    }
+
+    public async Task<SalesTargetAttainmentResultDto> GetSalesTargetAttainmentAsync(string startDate, string endDate, string? salesRepCode, CancellationToken cancellationToken)
+    {
+        var range = _validator.ValidateDateRange(startDate, endDate);
+        var normalizedSalesRepCode = _validator.NormalizeOptionalCode(salesRepCode);
+        var startDateLiteral = DateLiteral(range.Start);
+        var endDateExclusiveLiteral = DateLiteral(range.End.AddDays(1));
+        var salesRepCodeLiteral = NullableStringLiteral(normalizedSalesRepCode);
+
+        var sql = $"""
+            WITH ActualRevenue AS (
+                SELECT
+                    o."SalesRepId",
+                    EXTRACT(YEAR FROM o."OrderDate")::int AS "TargetYear",
+                    EXTRACT(MONTH FROM o."OrderDate")::int AS "TargetMonth",
+                    SUM(o."TotalAmount") AS "ActualRevenue"
+                FROM sales."SalesOrder" AS o
+                INNER JOIN sales."Payment" AS p
+                    ON p."OrderId" = o."OrderId"
+                INNER JOIN sales."PaymentStatus" AS ps
+                    ON ps."PaymentStatusId" = p."PaymentStatusId"
+                WHERE ps."StatusCode" IN {RevenueStatuses}
+                  AND o."SalesRepId" IS NOT NULL
+                  AND o."OrderDate" >= {startDateLiteral}
+                  AND o."OrderDate" < {endDateExclusiveLiteral}
+                GROUP BY o."SalesRepId", EXTRACT(YEAR FROM o."OrderDate")::int, EXTRACT(MONTH FROM o."OrderDate")::int
+            )
+            SELECT
+                sr."SalesRepCode",
+                sr."FullName",
+                st."TargetYear"::int AS "TargetYear",
+                st."TargetMonth"::int AS "TargetMonth",
+                st."TargetAmount",
+                CAST(ROUND(COALESCE(ar."ActualRevenue", 0), 2) AS decimal(18,2)) AS "ActualRevenue",
+                CAST(ROUND(CASE WHEN st."TargetAmount" > 0 THEN (COALESCE(ar."ActualRevenue", 0) / st."TargetAmount") * 100 ELSE 0 END, 2) AS decimal(18,2)) AS "AttainmentPercent"
+            FROM sales."SalesTarget" AS st
+            INNER JOIN sales."SalesRep" AS sr
+                ON sr."SalesRepId" = st."SalesRepId"
+            LEFT JOIN ActualRevenue AS ar
+                ON ar."SalesRepId" = st."SalesRepId"
+               AND ar."TargetYear" = st."TargetYear"::int
+               AND ar."TargetMonth" = st."TargetMonth"::int
+            WHERE make_date(st."TargetYear"::int, st."TargetMonth"::int, 1) >= {startDateLiteral}
+              AND make_date(st."TargetYear"::int, st."TargetMonth"::int, 1) < {endDateExclusiveLiteral}
+              AND ({salesRepCodeLiteral} IS NULL OR sr."SalesRepCode" = {salesRepCodeLiteral})
+            ORDER BY st."TargetYear", st."TargetMonth", sr."SalesRepCode";
+            """;
+
+        await using var connection = await _connectionFactory.OpenConnectionAsync(cancellationToken);
+        var rows = (await connection.QueryAsync<SalesTargetAttainmentDto>(new CommandDefinition(
+            sql,
+            cancellationToken: cancellationToken))).AsList();
+
+        return new SalesTargetAttainmentResultDto(startDate, endDate, normalizedSalesRepCode, rows);
+    }
 }

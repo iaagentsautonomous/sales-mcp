@@ -159,3 +159,34 @@ public sealed record SalesRepComparativeResultDto(
     string StartDate,
     string EndDate,
     IReadOnlyList<SalesRepComparativeAnalysisDto> Items);
+
+// Sales Target DTOs
+public sealed record SalesTargetDto(
+    string SalesRepCode,
+    string FullName,
+    int TargetYear,
+    int TargetMonth,
+    decimal TargetAmount,
+    string? Notes,
+    bool IsActive);
+
+public sealed record SalesTargetResultDto(
+    string StartDate,
+    string EndDate,
+    string? SalesRepCode,
+    IReadOnlyList<SalesTargetDto> Items);
+
+public sealed record SalesTargetAttainmentDto(
+    string SalesRepCode,
+    string FullName,
+    int TargetYear,
+    int TargetMonth,
+    decimal TargetAmount,
+    decimal ActualRevenue,
+    decimal AttainmentPercent);
+
+public sealed record SalesTargetAttainmentResultDto(
+    string StartDate,
+    string EndDate,
+    string? SalesRepCode,
+    IReadOnlyList<SalesTargetAttainmentDto> Items);

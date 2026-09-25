@@ -2,7 +2,7 @@
 namespace Sales.Mcp.Application.Validation
 {
     [Serializable]
-    internal class McpException : Exception
+    public class McpException : Exception
     {
         public McpException()
         {

@@ -1,5 +1,4 @@
 using Microsoft.Extensions.Options;
-using ModelContextProtocol;
 using Sales.Mcp.Application.Configuration;
 using Sales.Mcp.Application.Validation;
 
