@@ -23,31 +23,27 @@ spec:
         - containerPort: 8080
         
         env:
-        # 1. Alimenta o GetConnectionString("ReadOnly") via Secret do K8s
         - name: ConnectionStrings__ReadOnly
           valueFrom:
             secretKeyRef:
               name: mcp-database-secret
               key: connection-string
         
-        # 2. Alimenta a propriedade databaseOptions.ReadOnlyPasswordFile com o caminho do Linux
+        # Mudamos para /tmp/ que possui permissão irrestrita de leitura/escrita no Linux
         - name: Database__ReadOnlyPasswordFile
-          value: "/app/secrets/readonly-password.txt"
+          value: "/tmp/readonly-password.txt"
 
-        # 3. Alimenta a configuração do Token Bearer exigido pelo MCP
         - name: McpOptions__BearerTokenFile
-          value: "/app/secrets/bearer-token.txt"
+          value: "/tmp/bearer-token.txt"
 
-        # Aponta onde o Kubernetes vai montar a pasta de segredos
         volumeMounts:
         - name: mcp-secrets-volume
-          mountPath: /app/secrets
-          readOnly: true
+          mountPath: /tmp
+          readOnly: false # Permite que o container manipule a pasta se necessário
 
       imagePullSecrets:
       - name: dockerhub-secret
 
-      # Cria os arquivos .txt em tempo de execução usando o Secret da VPS
       volumes:
       - name: mcp-secrets-volume
         secret:
