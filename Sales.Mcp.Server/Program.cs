@@ -18,7 +18,7 @@ using Sales.Mcp.Server.Tools;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// --- AJUSTE 1: Configuração condicional do McpOptions para Produção ---
+// --- AJUSTE 1: Configuraï¿½ï¿½o condicional do McpOptions para Produï¿½ï¿½o ---
 var mcpBearerToken = Environment.GetEnvironmentVariable("McpOptions__BearerToken");
 
 builder.Services
@@ -27,7 +27,7 @@ builder.Services
     .Configure(options =>
     {
         // Se houver um token vindo da Secret do K8s, injeta na propriedade (se houver)
-        // e define um valor fictício no arquivo para passar na validação estrita [Required]
+        // e define um valor fictï¿½cio no arquivo para passar na validaï¿½ï¿½o estrita [Required]
         if (!string.IsNullOrEmpty(mcpBearerToken))
         {
             options.BearerTokenFile = "not-used-in-production";
@@ -36,7 +36,7 @@ builder.Services
     .ValidateDataAnnotations()
     .ValidateOnStart();
 
-// --- AJUSTE 2: Configuração condicional do DatabaseOptions para Produção ---
+// --- AJUSTE 2: Configuraï¿½ï¿½o condicional do DatabaseOptions para Produï¿½ï¿½o ---
 var dbPassword = Environment.GetEnvironmentVariable("Database__ReadOnlyPassword");
 
 builder.Services
@@ -44,8 +44,8 @@ builder.Services
     .Bind(builder.Configuration.GetSection("Database"))
     .Configure(options =>
     {
-        // Se houver uma senha vinda da Secret do K8s, define um valor fictício
-        // no caminho do arquivo apenas para burlar a validação do [Required]
+        // Se houver uma senha vinda da Secret do K8s, define um valor fictï¿½cio
+        // no caminho do arquivo apenas para burlar a validaï¿½ï¿½o do [Required]
         if (!string.IsNullOrEmpty(dbPassword))
         {
             options.ReadOnlyPasswordFile = "not-used-in-production";
@@ -94,7 +94,7 @@ builder.Services.AddRateLimiter(options =>
     options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
 });
 
-// --- AJUSTE 3: Resolução inteligente da String de Conexão com a Secret ---
+// --- AJUSTE 3: Resoluï¿½ï¿½o inteligente da String de Conexï¿½o com a Secret ---
 var baseReadOnlyConnectionString = builder.Configuration.GetConnectionString("ReadOnly")
     ?? throw new InvalidOperationException("ConnectionStrings__ReadOnly nao foi configurada.");
 
@@ -102,7 +102,7 @@ string resolvedReadOnlyConnectionString;
 
 if (!string.IsNullOrEmpty(dbPassword))
 {
-    // EM PRODUÇÃO: Constrói a string final acoplando a senha direto da memória da Secret do K8s
+    // EM PRODUï¿½ï¿½O: Constrï¿½i a string final acoplando a senha direto da memï¿½ria da Secret do K8s
     var connectionBuilder = new Npgsql.NpgsqlConnectionStringBuilder(baseReadOnlyConnectionString)
     {
         Password = dbPassword
@@ -111,7 +111,7 @@ if (!string.IsNullOrEmpty(dbPassword))
 }
 else
 {
-    // EM DESENVOLVIMENTO (Local): Usa a sua estratégia original lendo o arquivo físico .txt
+    // EM DESENVOLVIMENTO (Local): Usa a sua estratï¿½gia original lendo o arquivo fï¿½sico .txt
     var databaseOptions = builder.Configuration.GetSection("Database").Get<DatabaseOptions>()
         ?? throw new InvalidOperationException("A secao Database nao foi configurada.");
 
@@ -151,7 +151,9 @@ builder.Services.AddAuthorizationBuilder()
 builder.Services.AddMcpServer()
     .WithHttpTransport(options =>
     {
-        options.Stateless = true;
+        // Modo moderno: Streamable HTTP + SSE. ExpÃµe GET /mcp (text/event-stream),
+        // POST /mcp (mensagens JSON-RPC) e DELETE /mcp (encerrar sessÃ£o).
+        options.Stateless = false;
     })
     .WithTools<SalesTools>()
     .WithResources<SalesResources>()

@@ -50,3 +50,44 @@ spec:
 
       imagePullSecrets:
       - name: dockerhub-secret
+---
+# Service: expõe a porta 8080 do pod dentro do cluster.
+# Sem ele, o containerPort no Deployment é apenas metadado e nada é roteado.
+apiVersion: v1
+kind: Service
+metadata:
+  name: sales-mcp-service
+  namespace: default
+  labels:
+    app: sales-mcp
+spec:
+  type: ClusterIP
+  selector:
+    app: sales-mcp
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+      protocol: TCP
+---
+# Ingress: roteia a URL HTTP pública até o Service acima.
+# ATENÇÃO: ajuste o host abaixo para o domínio real do seu cluster/DNS.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sales-mcp-ingress
+  namespace: default
+  labels:
+    app: sales-mcp
+spec:
+  rules:
+    - host: sales-mcp.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sales-mcp-service
+                port:
+                  number: 8080

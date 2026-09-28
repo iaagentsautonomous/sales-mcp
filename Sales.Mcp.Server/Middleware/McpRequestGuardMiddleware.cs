@@ -31,6 +31,14 @@ public sealed class McpRequestGuardMiddleware
             return;
         }
 
+        // Streams SSE (GET /mcp) são conexões de longa duração e não devem ser
+        // limitadas pelo RequestTimeoutSeconds, que é destinado a mensagens JSON-RPC (POST).
+        if (HttpMethods.IsGet(context.Request.Method))
+        {
+            await _next(context);
+            return;
+        }
+
         var nextTask = _next(context);
         var timeoutTask = Task.Delay(TimeSpan.FromSeconds(_options.RequestTimeoutSeconds), context.RequestAborted);
         var completedTask = await Task.WhenAny(nextTask, timeoutTask);
