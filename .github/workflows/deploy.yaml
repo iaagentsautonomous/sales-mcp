@@ -26,8 +26,9 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: Sales.Mcp.Server/Dockerfile # Aponta para o Dockerfile da sua subpasta .NET
+        file: Dockerfile # Dockerfile da raiz (copia todo o codigo-fonte)
         push: true
+        no-cache: true          # ← força rebuild sem usar cache antigo
         tags: |
           knowbr/sales-mcp:latest
           knowbr/sales-mcp:${{ github.sha }}

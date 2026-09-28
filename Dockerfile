@@ -10,8 +10,8 @@ COPY Sales.Mcp.Application/Sales.Mcp.Application.csproj Sales.Mcp.Application/
 # Se você criou projetos novos (Ex: Domain, Infrastructure), adicione as linhas correspondentes aqui:
 # COPY Sales.Mcp.Domain/Sales.Mcp.Domain.csproj Sales.Mcp.Domain/
 
-# Restaura as dependências baseado na Solution inteira
-RUN dotnet restore Sales.Mcp.sln --configfile NuGet.config
+# Restaura apenas o projeto Server (traz Application transitivamente)
+RUN dotnet restore Sales.Mcp.Server/Sales.Mcp.Server.csproj --configfile NuGet.config
 
 # 3. CORREÇÃO PRINCIPAL: Copia TODO o código-fonte restante do repositório
 # Isso garante que qualquer arquivo novo ou nova pasta de feature seja incluída no build

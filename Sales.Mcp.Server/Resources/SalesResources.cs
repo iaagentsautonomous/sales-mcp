@@ -64,7 +64,7 @@ public class SalesResources
         {
           "service": "sales-mcp",
           "transport": "streamable-http",
-          "stateless": true,
+          "stateless": false,
           "security": {
             "auth": "bearer-token",
             "allowedOriginsConfigured": {{options.AllowedOriginSet.Count}},
