@@ -1,8 +1,8 @@
-using System.Threading.RateLimiting;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.Extensions.Options;
+using ModelContextProtocol.AspNetCore;
 using Sales.Mcp.Application.Abstractions;
 using Sales.Mcp.Application.Configuration;
 using Sales.Mcp.Application.Infrastructure;
@@ -15,11 +15,13 @@ using Sales.Mcp.Server.Health;
 using Sales.Mcp.Server.Middleware;
 using Sales.Mcp.Server.Resources;
 using Sales.Mcp.Server.Tools;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // --- AJUSTE 1: Configura��o condicional do McpOptions para Produ��o ---
 var mcpBearerToken = Environment.GetEnvironmentVariable("McpOptions__BearerToken");
+
 
 builder.Services
     .AddOptions<McpOptions>()
@@ -158,6 +160,12 @@ builder.Services.AddMcpServer()
     .WithTools<SalesTools>()
     .WithResources<SalesResources>()
     .AddAuthorizationFilters();
+
+// Força o SDK a aceitar requisições diretas (como o tools/list) sem exigir handshake de sessão
+builder.Services.Configure<HttpServerTransportOptions>(options =>
+{
+    options.Stateless = true;
+});
 
 var app = builder.Build();
 
