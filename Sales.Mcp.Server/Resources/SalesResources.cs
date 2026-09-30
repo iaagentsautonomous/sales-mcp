@@ -42,7 +42,9 @@ public class SalesResources
             "get_top_customers",
             "get_sales_by_channel",
             "get_order_status_summary",
-            "get_recent_orders"
+            "get_recent_orders",
+            "get_sales_targets",
+            "get_sales_target_attainment"
           ],
           "notes": [
             "Todas as consultas sao somente leitura.",
