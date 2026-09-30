@@ -46,7 +46,7 @@ jobs:
         
         # 2. Força o K8s a atualizar para a tag imutável do commit atual de forma segura
         # NOTA: Ajuste 'sales-mcp-deployment' e 'sales-mcp-container' caso os nomes no seu YAML sejam diferentes
-        kubectl set image deployment/sales-mcp-deployment sales-mcp-container=knowbr/sales-mcp:${{ github.sha }}
+        kubectl set image deployment/sales-mcp-deployment sales-mcp-container=knowbr/sales-mcp:${{ github.sha }} --namespace=default
 
     - name: Verificar Status do Deploy
       run: |
