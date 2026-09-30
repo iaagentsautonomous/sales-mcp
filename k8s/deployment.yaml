@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: sales-mcp-deployment
-  namespace: default
+  namespace: apps  
   labels:
     app: sales-mcp
 spec:
