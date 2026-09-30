@@ -1,27 +1,25 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM ://microsoft.com AS build
 WORKDIR /src
 
 # 1. Copia os arquivos de configuração globais
 COPY NuGet.config global.json Sales.Mcp.sln ./
 
-# 2. Copia TODOS os arquivos .csproj mantendo a estrutura de pastas (para cache eficiente do restore)
+# 2. Copia TODOS os arquivos .csproj mantendo a estrutura de pastas
 COPY Sales.Mcp.Server/Sales.Mcp.Server.csproj Sales.Mcp.Server/
 COPY Sales.Mcp.Application/Sales.Mcp.Application.csproj Sales.Mcp.Application/
+# ADICIONADO: Copia o csprot do DbBootstrap para o restore enxergar todas as dependências
 COPY Sales.Mcp.DbBootstrap/Sales.Mcp.DbBootstrap.csproj Sales.Mcp.DbBootstrap/
-# Se você criou projetos novos (Ex: Domain, Infrastructure), adicione as linhas correspondentes aqui:
-# COPY Sales.Mcp.Domain/Sales.Mcp.Domain.csproj Sales.Mcp.Domain/
 
-# Restaura apenas o projeto Server (traz Application transitivamente)
+# Restaura o projeto Server garantindo que todas as referências do DbBootstrap e Application sejam resolvidas
 RUN dotnet restore Sales.Mcp.Server/Sales.Mcp.Server.csproj --configfile NuGet.config
 
-# 3. CORREÇÃO PRINCIPAL: Copia TODO o código-fonte restante do repositório
-# Isso garante que qualquer arquivo novo ou nova pasta de feature seja incluída no build
+# 3. Copia todo o código-fonte restante do repositório (incluindo as pastas físicas)
 COPY . .
 
 # 4. Publica o servidor MCP
 RUN dotnet publish Sales.Mcp.Server/Sales.Mcp.Server.csproj -c Release -o /app/publish /p:UseAppHost=false
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0-bookworm-slim AS runtime
+FROM ://microsoft.com AS runtime
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
@@ -29,7 +27,7 @@ RUN apt-get update \
 WORKDIR /app
 COPY --from=build /app/publish .
 
-ENV ASPNETCORE_URLS=http://0.0.0.0:8080
+ENV ASPNETCORE_URLS=http://0.0.0
 ENV DOTNET_EnableDiagnostics=0
 
 USER $APP_UID
