@@ -3,7 +3,7 @@ name: Deploy Automático K8s
 on:
   push:
     branches:
-      - main # Dispara o deploy sempre que houver push na branch main
+      - main
 
 jobs:
   build-and-deploy:
@@ -26,12 +26,12 @@ jobs:
       uses: docker/build-push-action@v5
       with:
         context: .
-        file: Dockerfile # Dockerfile da raiz (copia todo o codigo-fonte)
+        file: Dockerfile
         push: true
-        no-cache: true          # ← força rebuild sem usar cache antigo
+        no-cache: true
         tags: |
           knowbr/sales-mcp:latest
-          knowbr/sales-mcp:${{ github.sha }}
+          knowbr/sales-mcp:sha-${{ github.sha }}
 
     - name: Configurar Contexto do Kubernetes
       uses: azure/k8s-set-context@v4
@@ -41,14 +41,12 @@ jobs:
 
     - name: Executar o Deploy no Cluster
       run: |
-        # 1. Aplica as configurações base do manifesto (portas, volumes, etc)
+        # Aplica o manifesto original sem nenhuma alteração por texto/sed
         kubectl apply -f k8s/deployment.yaml
         
-        # 2. Força o K8s a atualizar para a tag imutável do commit atual de forma segura
-        # NOTA: Ajuste 'sales-mcp-deployment' e 'sales-mcp-container' caso os nomes no seu YAML sejam diferentes
-        kubectl set image deployment/sales-mcp-deployment sales-mcp-container=knowbr/sales-mcp:${{ github.sha }} --namespace=default
+        # Atualiza a tag da imagem de forma nativa e segura
+        kubectl set image deployment/sales-mcp-deployment sales-mcp-container="knowbr/sales-mcp:sha-${{ github.sha }}" --namespace=default
 
     - name: Verificar Status do Deploy
       run: |
-        # Garante que o pipeline do GitHub só termine com sucesso se o Pod realmente subir na VPS
-        kubectl rollout status deployment/sales-mcp-deployment --timeout=90s
+        kubectl rollout status deployment/sales-mcp-deployment --namespace=default --timeout=90s
