@@ -15,7 +15,7 @@ COPY Sales.Mcp.DbBootstrap/Sales.Mcp.DbBootstrap.csproj Sales.Mcp.DbBootstrap/
 RUN dotnet restore Sales.Mcp.Server/Sales.Mcp.Server.csproj --configfile NuGet.config
 
 # 3. CORREÇÃO PRINCIPAL: Copia TODO o código-fonte restante do repositório
-# Isso garante que qualquer arquivo novo ou nova pasta de feature seja incluída no build .
+# Isso garante que qualquer arquivo novo ou nova pasta de feature seja incluída no build
 COPY . .
 
 # 4. Publica o servidor MCP
