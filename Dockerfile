@@ -1,9 +1,4 @@
-# Força o parser a ler a imagem de build como string estrita
-ARG BUILD_IMAGE=://microsoft.com
-# Força o parser a ler a imagem de runtime como string estrita
-ARG RUNTIME_IMAGE=://microsoft.com
-
-FROM ${BUILD_IMAGE} AS build
+FROM ://microsoft.com AS build
 WORKDIR /src
 
 COPY NuGet.config global.json Sales.Mcp.sln ./
@@ -18,7 +13,7 @@ COPY . .
 
 RUN dotnet publish Sales.Mcp.Server/Sales.Mcp.Server.csproj -c Release -o /app/publish /p:UseAppHost=false
 
-FROM ${RUNTIME_IMAGE} AS runtime
+FROM ://microsoft.com AS runtime
 RUN apt-get update \
     && apt-get install -y --no-install-recommends curl \
     && rm -rf /var/lib/apt/lists/*
