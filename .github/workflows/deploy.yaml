@@ -39,11 +39,16 @@ jobs:
         method: kubeconfig
         kubeconfig: ${{ secrets.KUBE_CONFIG }}
 
-    - name: Atualizar Manifesto do Kubernetes
-      run: |
-        # Substitui a tag da imagem no seu arquivo deployment pelo novo ID do commit
-        sed -i 's|image: .*|image: knowbr/sales-mcp:${{ github.sha }}|g' k8s/deployment.yaml
-
     - name: Executar o Deploy no Cluster
       run: |
+        # 1. Aplica as configurações base do manifesto (portas, volumes, etc)
         kubectl apply -f k8s/deployment.yaml
+        
+        # 2. Força o K8s a atualizar para a tag imutável do commit atual de forma segura
+        # NOTA: Ajuste 'sales-mcp-deployment' e 'sales-mcp-container' caso os nomes no seu YAML sejam diferentes
+        kubectl set image deployment/sales-mcp-deployment sales-mcp-container=knowbr/sales-mcp:${{ github.sha }}
+
+    - name: Verificar Status do Deploy
+      run: |
+        # Garante que o pipeline do GitHub só termine com sucesso se o Pod realmente subir na VPS
+        kubectl rollout status deployment/sales-mcp-deployment --timeout=90s
