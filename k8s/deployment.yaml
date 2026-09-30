@@ -89,7 +89,7 @@ metadata:
     app: sales-mcp
 spec:
   rules:
-    - host: ://iaagentsautonomous.com  # 👈 AJUSTADO PARA O SEU HOST REAL DO POSTMAN
+    - host: sales-mcp.iaagentsautonomous.com  # 👈 AJUSTADO PARA O SEU HOST REAL DO POSTMAN
       http:
         paths:
           - path: /
