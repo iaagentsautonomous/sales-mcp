@@ -66,7 +66,7 @@ public class SalesTools
         => _analyticsService.GetOrderStatusSummaryAsync(startDate, endDate, cancellationToken);
 
     [McpServerTool(Name = "get_recent_orders", Title = "Recent orders")]
-    [Description("Retorna pedidos mais recentes, com filtros opcionais por status e codigo do cliente.")]
+    [Description("Retorna pedidos mais recentes, com filtros opcionais por status e codigo do cliente xxx.")]
     [Authorize]
     public Task<RecentOrdersResultDto> GetRecentOrdersAsync(
         [Description("Quantidade maxima de pedidos retornados.")] int limit,
@@ -137,7 +137,7 @@ public class SalesTools
 
     [McpServerTool(Name = "get_sales_targets", Title = "Sales targets")]
     [Description("Retorna as metas de venda por vendedor e mes, dentro de um intervalo de datas.")]
-   // [Authorize]
+    [Authorize]
     public Task<SalesTargetResultDto> GetSalesTargetsAsync(
         [Description("Data inicial no formato yyyy-MM-dd.")] string startDate,
         [Description("Data final no formato yyyy-MM-dd.")] string endDate,
@@ -147,7 +147,7 @@ public class SalesTools
 
     [McpServerTool(Name = "get_sales_target_attainment", Title = "Sales target attainment")]
     [Description("Compara a meta de venda com o faturamento real por vendedor e mes, com percentual de atingimento, dentro de um intervalo de datas.")]
-   // [Authorize]
+    [Authorize]
     public Task<SalesTargetAttainmentResultDto> GetSalesTargetAttainmentAsync(
         [Description("Data inicial no formato yyyy-MM-dd.")] string startDate,
         [Description("Data final no formato yyyy-MM-dd.")] string endDate,
