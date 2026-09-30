@@ -7,6 +7,7 @@ COPY NuGet.config global.json Sales.Mcp.sln ./
 # 2. Copia TODOS os arquivos .csproj mantendo a estrutura de pastas (para cache eficiente do restore)
 COPY Sales.Mcp.Server/Sales.Mcp.Server.csproj Sales.Mcp.Server/
 COPY Sales.Mcp.Application/Sales.Mcp.Application.csproj Sales.Mcp.Application/
+COPY Sales.Mcp.DbBootstrap/Sales.Mcp.DbBootstrap.csproj Sales.Mcp.DbBootstrap/
 # Se você criou projetos novos (Ex: Domain, Infrastructure), adicione as linhas correspondentes aqui:
 # COPY Sales.Mcp.Domain/Sales.Mcp.Domain.csproj Sales.Mcp.Domain/
 
