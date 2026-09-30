@@ -45,8 +45,8 @@ jobs:
         kubectl apply -f k8s/deployment.yaml
         
         # Atualiza a tag da imagem de forma nativa e segura
-        kubectl set image deployment/sales-mcp-deployment sales-mcp-container="knowbr/sales-mcp:sha-${{ github.sha }}" --namespace=default
+        kubectl set image deployment/sales-mcp-deployment sales-mcp-container="knowbr/sales-mcp:sha-${{ github.sha }}" --namespace=apps
 
     - name: Verificar Status do Deploy
       run: |
-        kubectl rollout status deployment/sales-mcp-deployment --namespace=default --timeout=90s
+        kubectl rollout status deployment/sales-mcp-deployment --namespace=apps --timeout=90s
